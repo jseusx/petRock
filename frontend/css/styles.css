@@ -12,6 +12,12 @@ body {
     width: 100%;
 }
 
+.navbar-brand {
+    padding-left: 15px;
+    font-weight: bold;
+    color: #343434
+}
+
 h3 {
     font-family: 'Inter', sans-serif;
     font-weight: 700;
@@ -63,5 +69,8 @@ h3 {
 
 .create-account-link {
     text-align: center;
-    margin-top: 10px
+    margin-top: 10px;
+}
+.create-account-link a {
+    text-decoration: none;
 }
