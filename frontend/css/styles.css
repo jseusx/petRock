@@ -1,0 +1,67 @@
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.navbar {
+    width: 100%;
+}
+
+h3 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+}
+
+.login-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; /* Allow this container to take available vertical space */
+}
+
+.login-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);*/
+    box-shadow: 0px 0px 22px rgba(0, 0, 0, 0.18);
+    width: 350px;
+    text-align: center;
+}
+
+.header-logo {
+    height: 40px;
+    width: 40px;
+}
+
+/* Custom button styles */
+.btn-custom {
+    border-radius: 40px;
+    background-color: #007AFF;
+    border-color: #007AFF;
+    color: white;
+    margin-top: 20px;
+    /* This pushes the button 71px down from the password input */
+
+}
+
+.btn-custom:hover {
+    background-color: #0060d0;
+    border-color: #0056b3;
+    color: #ffffff;
+}
+
+.username-container {
+    margin-bottom: 25px
+}
+
+.create-account-link {
+    text-align: center;
+    margin-top: 10px
+}
