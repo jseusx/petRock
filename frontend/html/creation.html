@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <title>PetRock</title>
+    <style>
+        .left-panel {
+            position: absolute;
+            left: 20px;
+            width: 300px;
+            height: 400px;
+            background-color: tan;
+            margin-top: 200px;
+            align-items: center;
+            display: flex;
+            justify-content: center;
+        }
+        .button-grid {
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .button-grid button {
+            width: 80px;
+            height: 80px;
+            border: none;
+            background-color: rgb(194, 100, 63);
+            cursor: pointer;
+        }
+        .button-grid button img {
+            width: 80%;
+            height: 80%;
+        }
+
+    </style>
+    <script>
+
+        function confirmPetName(event) {
+            event.preventDefault(); 
+            const petNameInput = document.querySelector('input[name="name"]'); //get name from the input box
+            const petName = petNameInput.value.trim();
+
+            if (petName) {
+                const confirmation = confirm(`Are you sure you want to name your rock '${petName}'?`);
+                // if confirm, confirm
+                if (confirmation) {
+                    event.target.submit();
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                    <img src="src/spriteRock.png" alt="Pet" style="height: 40px; display: inline-block; margin-right: 10px;">
+                    <strong>PetRock</strong>
+                </a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Community</a></li>
+                <li><a href="#">Store</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div style="display: flex; align-items: center; margin-top: 20px; padding-left: 20px;">
+        <img src="src/rockbux.png" alt="rockBux" style="width: 80px; height: 80px; margin-right: 10px;"> 
+        <p style="font-size: 5.0rem; margin: 0;">0</p>
+    </div>
+
+
+    <div class="left-panel">
+        <div class="button-grid">
+            <button><img src="src/rockColor.png" alt="Icon 1"></button>
+            <button><img src="src/rockShape.png" alt="Icon 2"></button>
+            <button><img src="src/rockEyes.png" alt="Icon 3"></button>
+            <button><img src="src/rockMisc.png" alt="Icon 4"></button>
+            <button><img src="src/rockSize.png" alt="Icon 5"></button>
+            <button><img src="src/rockUndecided.png" alt="Icon 6"></button>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Give your friend a name!</h1>
+        <p style="font-size: 1.2rem; color: #555;">Give him some decorations while you're at it.</p>
+    </div>
+
+
+    <div>
+        <form action="creation.html" method="post" style="text-align: center; margin-top: 20px;" onsubmit="confirmPetName(event)">
+            <input type="text" name="name" placeholder="Enter your pet's name" required style="width: 300px; padding: 10px; font-size: 1.2rem; border-radius: 5px; border: 1px solid #ccc;">
+            <img src="src/rockChar.png" alt = "pet" style="width: 300px; height: 200px; margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">
+            <br>
+            <button type="submit" class="btn btn-primary" style="font-size: 1.2rem;">Create Pet</button>
+            <button type="button" class="btn btn-secondary" style="font-size: 1.2rem; margin-left: 10px;">Restart</button>
+        </form>
+    </div>
+</body>
+</html>
