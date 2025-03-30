@@ -22,7 +22,7 @@
             padding-top:10px;
         }
         .button-grid {
-            margin-left:15px;
+            margin-left:10px;
             width:150px;
             height: 200px;
             display: grid;
@@ -81,17 +81,17 @@
         }
         .rock-shape {
             z-index: 1;
-            width: 100%; /* Full size for rockShape */
+            width: 100%;
             height: 100%;
         }
         .rock-misc {
             z-index: 2;
-            width: 50%; /* Scale down rockMisc */
+            width: 50%;
             height: 50%;
         }
         .rock-eyes {
             z-index: 3;
-            width: 75%; /* Slightly smaller for rockEyes */
+            width: 75%;
             height: 75%;
         }
     </style>
@@ -145,14 +145,13 @@
             const customizationArea = document.querySelector('.customization-area');
             let imgElement = customizationArea.querySelector(`.${layer}`);
 
-            // If the image element for the layer doesn't exist, create it
+            //create layer if none at first
             if (!imgElement) {
                 imgElement = document.createElement('img');
                 imgElement.classList.add(layer);
                 customizationArea.appendChild(imgElement);
             }
 
-            // Set the image source
             imgElement.src = imgSrc;
 
         }
@@ -200,7 +199,7 @@
 
     <div style="display: flex; align-items: center; margin-top: 20px; padding-left: 20px;">
         <img src="src/rockbux.png" alt="rockBux" style="width: 80px; height: 80px; margin-right: 10px;"> <!-- Replace with the actual path to your image -->
-        <p style="font-size: 5.0rem; margin: 0;">rockBucks</p>
+        <p style="font-size: 5.0rem; margin: 0;">20</p>
     </div>
 
     <div style="text-align: center; margin-top: 40px;">
