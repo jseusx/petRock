@@ -9,52 +9,157 @@
     <title>PetRock</title>
     <style>
         .left-panel {
+            border:pink solid 4px;
             position: absolute;
+            top: 400px;
             left: 20px;
-            width: 300px;
-            height: 400px;
+            width: 250px;
+            height:220px;
             background-color: tan;
-            margin-top: 200px;
-            align-items: center;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
+            padding-top:10px;
         }
         .button-grid {
-            display:grid;
+            margin-left:15px;
+            width:150px;
+            height: 200px;
+            display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
         .button-grid button {
-            width: 80px;
-            height: 80px;
-            border: none;
-            background-color: rgb(194, 100, 63);
+            width: 60px;
+            height: 60px;
+            border: black solid 2px;
+            background-color: #f8f9fa;
             cursor: pointer;
         }
         .button-grid button img {
-            width: 80%;
-            height: 80%;
+            width: 100%;
+            height: 100%;
         }
-
+        .menu {
+            width:40px;
+            height: 200px;
+            display: none;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 1px;
+            margin-left: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .menu img {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            border:#555 solid 1px;
+            margin-top:5px;
+        }
+        .customization-area {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            background-color: #e0e0e0;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;   
+        }
+        .customization-area img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: contain;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .rock-shape {
+            z-index: 1;
+            width: 100%; /* Full size for rockShape */
+            height: 100%;
+        }
+        .rock-misc {
+            z-index: 2;
+            width: 50%; /* Scale down rockMisc */
+            height: 50%;
+        }
+        .rock-eyes {
+            z-index: 3;
+            width: 75%; /* Slightly smaller for rockEyes */
+            height: 75%;
+        }
     </style>
     <script>
+        //show rock 1 menu on load
+        window.onload = function() {
+            showMenu('rockColor');
+        };
+        let rockColor = null;
+        let rockShape = null;
+        let rockEyes = null;
+        let rockMisc = null;
+        let rockSize = null;
+        const rockBucks = 20;
+        // show clicked menu, hide other menus
+        function showMenu(menuId) {
+            document.querySelectorAll('.menu').forEach(menu => menu.style.display = 'none');
+            document.getElementById(menuId).style.display = 'block';
+        }
+        // change rock part appearance
+        // index is number of the image clicked, rockPart is the part of the rock being changed
+        function changeAppearance(index, rockPart) {
+            console.log(`Changing appearance of ${rockPart} to index ${index}`);
+            const imgSrc = `src/${rockPart}${index}.png`;
 
-        function confirmPetName(event) {
-            event.preventDefault(); 
-            const petNameInput = document.querySelector('input[name="name"]'); //get name from the input box
-            const petName = petNameInput.value.trim();
+            switch (rockPart) {
+                case 'rockColor':
+                    rockColor = index;
+                    break;
+                case 'rockShape':
+                    rockShape = index;
+                    break;
+                case 'rockEyes':
+                    rockEyes = index;
+                    break;
+                case 'rockMisc':
+                    rockMisc = index;
+                    break;
+                case 'rockSize':
+                    rockSize = index;
+                    break;
 
-            if (petName) {
-                const confirmation = confirm(`Are you sure you want to name your rock '${petName}'?`);
-                // if confirm, confirm
-                if (confirmation) {
-                    event.target.submit();
-                }
             }
+            
+            applyImage(imgSrc, rockPart);
+
+        }
+
+        // apply image to the customization area
+        function applyImage(imgSrc, layer) {
+            const customizationArea = document.querySelector('.customization-area');
+            let imgElement = customizationArea.querySelector(`.${layer}`);
+
+            // If the image element for the layer doesn't exist, create it
+            if (!imgElement) {
+                imgElement = document.createElement('img');
+                imgElement.classList.add(layer);
+                customizationArea.appendChild(imgElement);
+            }
+
+            // Set the image source
+            imgElement.src = imgSrc;
+
         }
     </script>
 </head>
 <body>
+    <!--navbar navbar-->
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -72,21 +177,30 @@
         </div>
     </nav>
 
-    <div style="display: flex; align-items: center; margin-top: 20px; padding-left: 20px;">
-        <img src="src/rockbux.png" alt="rockBux" style="width: 80px; height: 80px; margin-right: 10px;"> 
-        <p style="font-size: 5.0rem; margin: 0;">0</p>
-    </div>
-
-
     <div class="left-panel">
         <div class="button-grid">
-            <button><img src="src/rockColor.png" alt="Icon 1"></button>
-            <button><img src="src/rockShape.png" alt="Icon 2"></button>
-            <button><img src="src/rockEyes.png" alt="Icon 3"></button>
-            <button><img src="src/rockMisc.png" alt="Icon 4"></button>
-            <button><img src="src/rockSize.png" alt="Icon 5"></button>
-            <button><img src="src/rockUndecided.png" alt="Icon 6"></button>
+            <button onclick="showMenu('rockColor')"><img src="src/rockColor.png" alt="Rock Color"></button>
+            <button onclick="showMenu('rockShape')"><img src="src/rockShape.png" alt="Rock Shape"></button>
+            <button onclick="showMenu('rockEyes')"><img src="src/rockEyes.png" alt="Rock Eyes"></button>
+            <button onclick="showMenu('rockMisc')"><img src="src/rockMisc.png" alt="Rock Miscellaneous"></button>
+            <button onclick="showMenu('rockSize')"><img src="src/rockSize.png" alt="Rock Size"></button>
         </div>
+
+        <div id="rockShape" class="menu">
+            <img src="src/rockShape1.png" alt="Shape 1" onclick="changeAppearance(1, 'rockShape')">
+            <img src="src/rockShape2.png" alt="Shape 2" onclick="changeAppearance(2, 'rockShape')">
+            <img src="src/rockShape3.png" alt="Shape 3" onclick="changeAppearance(3, 'rockShape')">
+        </div>
+
+        <div id="rockMisc" class="menu">
+            <img src="src/rockMisc1.png" alt="Misc 1" onclick="changeAppearance(1, 'rockMisc')">
+            <img src="src/rockMisc2.png" alt="Misc 2" onclick="changeAppearance(2, 'rockMisc')">
+        </div>
+    </div>
+
+    <div style="display: flex; align-items: center; margin-top: 20px; padding-left: 20px;">
+        <img src="src/rockbux.png" alt="rockBux" style="width: 80px; height: 80px; margin-right: 10px;"> <!-- Replace with the actual path to your image -->
+        <p style="font-size: 5.0rem; margin: 0;">rockBucks</p>
     </div>
 
     <div style="text-align: center; margin-top: 40px;">
@@ -94,11 +208,10 @@
         <p style="font-size: 1.2rem; color: #555;">Give him some decorations while you're at it.</p>
     </div>
 
-
     <div>
-        <form action="creation.html" method="post" style="text-align: center; margin-top: 20px;" onsubmit="confirmPetName(event)">
+        <form action="creation.html" method="post" style="text-align: center; margin-top: 20px;">
             <input type="text" name="name" placeholder="Enter your pet's name" required style="width: 300px; padding: 10px; font-size: 1.2rem; border-radius: 5px; border: 1px solid #ccc;">
-            <img src="src/rockChar.png" alt = "pet" style="width: 300px; height: 200px; margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">
+            <div class="customization-area"></div>
             <br>
             <button type="submit" class="btn btn-primary" style="font-size: 1.2rem;">Create Pet</button>
             <button type="button" class="btn btn-secondary" style="font-size: 1.2rem; margin-left: 10px;">Restart</button>
