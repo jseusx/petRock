@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop</title>
+    <link rel="stylesheet" type="text/css"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src = "../js/javascript.js"></script>
+    <style>
+
+        .image-container {
+        position: relative; 
+        }   
+
+        .image-container img.carousel-img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .image-container .priceimg {
+            position: absolute;
+            bottom: 10px; 
+            left: 10px; 
+            width: 50px; 
+            height: auto;
+        }
+
+        .image-container .price-value {
+            position: absolute;
+            bottom: 0px;
+            left: 70px; 
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        
+    </style>
+</head>
+
+<div>
+    <img src="../src/moneyicon.png" width="150" height=auto style="float:left">
+    <!-- NOTE filler value for now prob should read value from user table one database created -->
+    <p id="totalMoney" style="font-size:50px; font-weight: bold;">75</p>
+</div>
+
+<body>
+    <section class="pt-5 pb-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <h3 class="mb-3">Eyes</h3>
+                </div>
+                <div class="col-6 text-right">
+                    <a class="btn btn-primary mb-3 mr-1" 
+                       href="#carouselEyes"
+                       role="button"
+                        data-slide="prev">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <a class="btn btn-primary mb-3"
+                       href="#carouselEyes"
+                       role="button"
+                       data-slide="next">
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="col-12">
+                    <div id="carouselEyes" 
+                         class="carousel slide"
+                         data-ride="carousel"
+                         data-interval="false">
+
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/googlyeyes.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/girlface.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/eyelash.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row">
+
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/angryeyes.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/tiredeyes.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pt-5 pb-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <h3 class="mb-3">Shapes</h3>
+                </div>
+                <div class="col-6 text-right">
+                    <a class="btn btn-primary mb-3 mr-1" 
+                       href="#carouselShapes"
+                       role="button"
+                        data-slide="prev">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <a class="btn btn-primary mb-3"
+                       href="#carouselShapes"
+                       role="button"
+                       data-slide="next">
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="col-12">
+                    <div id="carouselShapes" 
+                         class="carousel slide"
+                         data-ride="carousel"
+                         data-interval="false">
+
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/rockshape1.jpg">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/blackrock.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/rockshape2.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row">
+
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/rockshape3.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pt-5 pb-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <h3 class="mb-3">Misc</h3>
+                </div>
+                <div class="col-6 text-right">
+                    <a class="btn btn-primary mb-3 mr-1" 
+                       href="#carouselMisc"
+                       role="button"
+                        data-slide="prev">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <a class="btn btn-primary mb-3"
+                       href="#carouselMisc"
+                       role="button"
+                       data-slide="next">
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="col-12">
+                    <div id="carouselMisc" 
+                         class="carousel slide"
+                         data-ride="carousel"
+                         data-interval="false">
+
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/catears.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/wizardhat.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/piratehat.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">25</p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row">
+
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="image-container">
+                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/crown.png">
+                                                <img src="../src/moneyicon.png" class="priceimg">
+                                                <p class="price-value">75</p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Default Bootstrap Modal -->
+    <div id="purchaseModal" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Purchase Confirmation</h5>
+            </div>
+            <div class="modal-body">
+                <!-- mostly filler cause it gets rewritten -->
+              <p id="modalText">Are you sure you want to make this purchase?</p>
+            </div>
+            <div class="modal-footer">
+              <button id="cancelButton" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button id="confirmButton" type="button" class="btn btn-primary">Confirm</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+
+    <!-- JavaScript dependencies -->
+    <script type="text/javascript" src= "https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script type="text/javascript"
+        src= "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script type="text/javascript"
+        src= "https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>
