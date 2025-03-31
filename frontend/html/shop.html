@@ -37,18 +37,31 @@
             font-weight: bold;
             font-size: 20px;
         }
-        
+        .totalIcon {
+            padding-top: 20px;
+        }
         
     </style>
 </head>
 
-<div>
-    <img src="../src/moneyicon.png" width="150" height=auto style="float:left">
-    <!-- NOTE filler value for now prob should read value from user table one database created -->
-    <p id="totalMoney" style="font-size:50px; font-weight: bold;">75</p>
-</div>
+
 
 <body>
+
+    <!-- navbar -->
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="../src/rockpet-logo.png" width="30" height="30" class="d-inline-block align-top me-2" alt="Logo">
+            PetRock
+        </a>
+    </nav>
+
+    <div class="totalIcon">
+        <img src="../src/moneyicon.png" width="150" height=auto style="float:left">
+        <!-- NOTE filler value for now prob should read value from user table one database created -->
+        <p id="totalMoney" style="font-size:50px; font-weight: bold;">75</p>
+    </div>
+
     <section class="pt-5 pb-5">
         <div class="container">
             <div class="row">
