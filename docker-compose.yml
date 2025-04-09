@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  petrock:
+    image: petrock
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend/html:/usr/share/nginx/html
+      - ./frontend/css:/usr/share/nginx/html/css
+      - ./frontend/js:/usr/share/nginx/html/js
+      - ./frontend/src:/usr/share/nginx/html/src
+    container_name: petrock-container
