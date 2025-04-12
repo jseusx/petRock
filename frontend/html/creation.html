@@ -6,42 +6,78 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <title>PetRock</title>
+    <title>PetRock - Create Your Pet</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8fafb;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
         .left-panel {
-            border:pink solid 4px;
+            border: 4px solid pink;
             position: absolute;
             top: 400px;
             left: 20px;
             width: 250px;
-            height:220px;
-            background-color: tan;
+            height: 220px;
+            background-color: #fff;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-top:10px;
+            padding-top: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
+
         .button-grid {
-            margin-left:10px;
-            width:150px;
+            margin-left: 10px;
+            width: 150px;
             height: 200px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
+
         .button-grid button {
             width: 60px;
             height: 60px;
-            border: black solid 2px;
+            border: 2px solid #ddd;
             background-color: #f8f9fa;
             cursor: pointer;
+            border-radius: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .button-grid button img {
-            width: 100%;
-            height: 100%;
+
+        .button-grid button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .menu {
-            width:40px;
+            width: 40px;
             height: 200px;
             display: none;
             grid-template-columns: 1fr;
@@ -49,27 +85,39 @@
             margin-top: 1px;
             margin-left: 20px;
             padding: 10px;
-            background-color: #f1f1f1;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
+
         .menu img {
             width: 30px;
             height: 30px;
             cursor: pointer;
-            border:#555 solid 1px;
-            margin-top:5px;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+            border-radius: 4px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+
+        .menu img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
         .customization-area {
             position: relative;
             width: 300px;
             height: 300px;
             margin: 20px auto;
-            background-color: #e0e0e0;
-            border: 2px solid #ccc;
+            background-color: #fff;
+            border: 2px solid #ddd;
             border-radius: 10px;
-            overflow: hidden;   
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
+
         .customization-area img {
             position: absolute;
             top: 50%;
@@ -79,91 +127,134 @@
             max-width: 100%;
             max-height: 100%;
         }
+
         .rock-shape {
             z-index: 1;
             width: 100%;
             height: 100%;
         }
+
         .rock-misc {
             z-index: 2;
             width: 50%;
             height: 50%;
         }
+
         .rock-eyes {
             z-index: 3;
             width: 75%;
             height: 75%;
         }
+
+        .rock-bux-container {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            padding-left: 20px;
+        }
+
+        .rock-bux-container img {
+            width: 80px;
+            height: 80px;
+            margin-right: 10px;
+        }
+
+        .rock-bux-container p {
+            font-size: 3rem;
+            margin: 0;
+            font-weight: bold;
+            color: #0084ff;
+        }
+
+        .form-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .form-container h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-container p {
+            font-size: 1.2rem;
+            color: #555;
+        }
+
+        .form-container input {
+            width: 300px;
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .form-container button {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #0084ff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0069d9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 132, 255, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #333;
+            border: 1px solid #ddd;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
     </style>
     <script>
-        //show rock 1 menu on load
         window.onload = function() {
             showMenu('rockColor');
         };
-        let rockColor = null;
-        let rockShape = null;
-        let rockEyes = null;
-        let rockMisc = null;
-        let rockSize = null;
-        const rockBucks = 20;
-        // show clicked menu, hide other menus
+
         function showMenu(menuId) {
             document.querySelectorAll('.menu').forEach(menu => menu.style.display = 'none');
             document.getElementById(menuId).style.display = 'block';
         }
-        // change rock part appearance
-        // index is number of the image clicked, rockPart is the part of the rock being changed
+
         function changeAppearance(index, rockPart) {
-            console.log(`Changing appearance of ${rockPart} to index ${index}`);
             const imgSrc = `src/${rockPart}${index}.png`;
-
-            switch (rockPart) {
-                case 'rockColor':
-                    rockColor = index;
-                    break;
-                case 'rockShape':
-                    rockShape = index;
-                    break;
-                case 'rockEyes':
-                    rockEyes = index;
-                    break;
-                case 'rockMisc':
-                    rockMisc = index;
-                    break;
-                case 'rockSize':
-                    rockSize = index;
-                    break;
-
-            }
-            
-            applyImage(imgSrc, rockPart);
-
-        }
-
-        // apply image to the customization area
-        function applyImage(imgSrc, layer) {
             const customizationArea = document.querySelector('.customization-area');
-            let imgElement = customizationArea.querySelector(`.${layer}`);
+            let imgElement = customizationArea.querySelector(`.${rockPart}`);
 
-            //create layer if none at first
             if (!imgElement) {
                 imgElement = document.createElement('img');
-                imgElement.classList.add(layer);
+                imgElement.classList.add(rockPart);
                 customizationArea.appendChild(imgElement);
             }
 
             imgElement.src = imgSrc;
-
         }
     </script>
 </head>
 <body>
-    <!--navbar navbar-->
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="index.html">
-                    <img src="/src/rockpet.png" alt="Pet" style="height: 40px; display: inline-block; margin-right: 10px;">
+                    <img src="../src/rockpet.png" alt="PetRock">
                     <strong>PetRock</strong>
                 </a>
             </div>
@@ -178,42 +269,39 @@
 
     <div class="left-panel">
         <div class="button-grid">
-            <button onclick="showMenu('rockColor')"><img src="/src/rockColor.png" alt="Rock Color"></button>
-            <button onclick="showMenu('rockShape')"><img src="/src/rockShape.png" alt="Rock Shape"></button>
-            <button onclick="showMenu('rockEyes')"><img src="/src/rockEyes.png" alt="Rock Eyes"></button>
-            <button onclick="showMenu('rockMisc')"><img src="/src/rockMisc.png" alt="Rock Miscellaneous"></button>
-            <button onclick="showMenu('rockSize')"><img src="/src/rockSize.png" alt="Rock Size"></button>
+            <button onclick="showMenu('rockColor')"><img src="../src/rockColor.png" alt="Rock Color"></button>
+            <button onclick="showMenu('rockShape')"><img src="../src/rockShape.png" alt="Rock Shape"></button>
+            <button onclick="showMenu('rockEyes')"><img src="../src/rockEyes.png" alt="Rock Eyes"></button>
+            <button onclick="showMenu('rockMisc')"><img src="../src/rockMisc.png" alt="Rock Miscellaneous"></button>
+            <button onclick="showMenu('rockSize')"><img src="../src/rockSize.png" alt="Rock Size"></button>
         </div>
 
         <div id="rockShape" class="menu">
-            <img src="src/rockShape1.png" alt="Shape 1" onclick="changeAppearance(1, 'rockShape')">
-            <img src="src/rockShape2.png" alt="Shape 2" onclick="changeAppearance(2, 'rockShape')">
-            <img src="src/rockShape3.png" alt="Shape 3" onclick="changeAppearance(3, 'rockShape')">
+            <img src="../src/rockShape1.png" alt="Shape 1" onclick="changeAppearance(1, 'rockShape')">
+            <img src="../src/rockShape2.png" alt="Shape 2" onclick="changeAppearance(2, 'rockShape')">
+            <img src="../src/rockShape3.png" alt="Shape 3" onclick="changeAppearance(3, 'rockShape')">
         </div>
 
         <div id="rockMisc" class="menu">
-            <img src="src/rockMisc1.png" alt="Misc 1" onclick="changeAppearance(1, 'rockMisc')">
-            <img src="src/rockMisc2.png" alt="Misc 2" onclick="changeAppearance(2, 'rockMisc')">
+            <img src="../src/rockMisc1.png" alt="Misc 1" onclick="changeAppearance(1, 'rockMisc')">
+            <img src="../src/rockMisc2.png" alt="Misc 2" onclick="changeAppearance(2, 'rockMisc')">
         </div>
+        </div>
+
+        <div class="rock-bux-container">
+        <img src="../src/rockbux.png" alt="rockBux">
+        <p>20</p>
     </div>
 
-    <div style="display: flex; align-items: center; margin-top: 20px; padding-left: 20px;">
-        <img src="src/rockbux.png" alt="rockBux" style="width: 80px; height: 80px; margin-right: 10px;"> <!-- Replace with the actual path to your image -->
-        <p style="font-size: 5.0rem; margin: 0;">20</p>
-    </div>
-
-    <div style="text-align: center; margin-top: 40px;">
-        <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Give your friend a name!</h1>
-        <p style="font-size: 1.2rem; color: #555;">Give him some decorations while you're at it.</p>
-    </div>
-
-    <div>
-        <form action="creation.html" method="post" style="text-align: center; margin-top: 20px;">
-            <input type="text" name="name" placeholder="Enter your pet's name" required style="width: 300px; padding: 10px; font-size: 1.2rem; border-radius: 5px; border: 1px solid #ccc;">
+    <div class="form-container">
+        <h1>Give your friend a name!</h1>
+        <p>Give him some decorations while you're at it.</p>
+        <form action="creation.html" method="post">
+            <input type="text" name="name" placeholder="Enter your pet's name" required>
             <div class="customization-area"></div>
             <br>
-            <button type="submit" class="btn btn-primary" style="font-size: 1.2rem;">Create Pet</button>
-            <button type="button" class="btn btn-secondary" style="font-size: 1.2rem; margin-left: 10px;">Restart</button>
+            <button type="submit" class="btn btn-primary">Create Pet</button>
+            <button type="button" class="btn btn-secondary">Restart</button>
         </form>
     </div>
 </body>

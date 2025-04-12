@@ -1,350 +1,788 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop</title>
-    <link rel="stylesheet" type="text/css"
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css"
-        href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src = "../js/javascript.js"></script>
+    <title>PetRock - Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <style>
-
-        .image-container {
-        position: relative; 
-        }   
-
-        .image-container img.carousel-img {
-            display: block;
-            width: 100%;
-            height: auto;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        .image-container .priceimg {
-            position: absolute;
-            bottom: 10px; 
-            left: 10px; 
-            width: 50px; 
-            height: auto;
+        
+        body {
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
-
-        .image-container .price-value {
-            position: absolute;
-            bottom: 0px;
-            left: 70px; 
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 5%;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
             font-weight: bold;
             font-size: 20px;
         }
-        .totalIcon {
-            padding-top: 20px;
+        
+        .logo img {
+            width: 36px;
+            margin-right: 10px;
         }
         
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 24px;
+        }
+        
+        nav ul li a {
+            transition: color 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            color: #0084ff;
+        }
+        
+        .sign-in {
+            font-weight: 500;
+        }
+
+        .total-currency {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 0;
+            background-color: #f8fafb;
+        }
+
+        .currency-container {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .currency-icon {
+            width: 50px;
+            margin-right: 12px;
+        }
+
+        .currency-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0084ff;
+        }
+
+        .shop-section {
+            padding: 40px 5%;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .section-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: #0084ff;
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0069d9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 132, 255, 0.2);
+        }
+
+        .btn-control {
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+
+        .items-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: hidden;
+        }
+
+        .shop-item {
+            flex: 0 0 calc(33.333% - 14px);
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .shop-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .shop-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .item-image {
+            position: relative;
+            width: 100%;
+            padding-bottom: 75%;
+            overflow: hidden;
+        }
+
+        .item-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .price-tag {
+            display: flex;
+            align-items: center;
+        }
+
+        .price-icon {
+            width: 24px;
+            margin-right: 8px;
+        }
+
+        .price-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .buy-button {
+            padding: 8px 16px;
+            background-color: #0084ff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .buy-button:hover {
+            background-color: #0069d9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 132, 255, 0.2);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-container {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: 20px;
+            font-size: 16px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px;
+            gap: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Carousel Animation */
+        .carousel-slide {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        /* Footer */
+        footer {
+            padding: 20px 5%;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        footer .links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        footer a:hover {
+            color: #0084ff;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .items-container {
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                padding-bottom: 20px;
+            }
+
+            .shop-item {
+                flex: 0 0 calc(50% - 10px);
+                scroll-snap-align: start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 15px;
+            }
+
+            .shop-item {
+                flex: 0 0 calc(100% - 10px);
+            }
+        }
     </style>
 </head>
-
-
-
 <body>
-
-    <!-- navbar -->
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="#">
-            <img src="/src/rockpet.png" width="30" height="30" class="d-inline-block align-top me-2" alt="Logo">
-            PetRock
+    <!-- Header -->
+    <header>
+        <a href="index.html" class="logo">
+            <img src="../src/rockpet.png" alt="PetRock Logo">
+            <span>PetRock</span>
         </a>
-    </nav>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="creation.html">Community</a></li>
+                <li><a href="shop.html">Store</a></li>
+                <li><a href="login.html" class="sign-in">Sign In</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <div class="totalIcon">
-        <img src="../src/moneyicon.png" width="150" height=auto style="float:left">
-        <!-- NOTE filler value for now prob should read value from user table one database created -->
-        <p id="totalMoney" style="font-size:50px; font-weight: bold;">75</p>
-    </div>
+    <!-- Currency Display -->
+    <section class="total-currency fade-in">
+        <div class="currency-container">
+            <img src="../src/moneyicon.png" alt="Currency" class="currency-icon">
+            <div class="currency-value" id="totalMoney">75</div>
+        </div>
+    </section>
 
-    <section class="pt-5 pb-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-6">
-                    <h3 class="mb-3">Eyes</h3>
+    <!-- Eyes Section -->
+    <section class="shop-section">
+        <div class="section-header fade-in">
+            <h2 class="section-title">Eyes</h2>
+            <div class="section-controls">
+                <button class="btn btn-primary btn-control prev-btn" data-section="eyes">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button class="btn btn-primary btn-control next-btn" data-section="eyes">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="items-container" id="eyes-container">
+            <!-- Item 1 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/googlyeyes.png" alt="Googly Eyes">
                 </div>
-                <div class="col-6 text-right">
-                    <a class="btn btn-primary mb-3 mr-1" 
-                       href="#carouselEyes"
-                       role="button"
-                        data-slide="prev">
-                        <i class="fa fa-arrow-left"></i>
-                    </a>
-                    <a class="btn btn-primary mb-3"
-                       href="#carouselEyes"
-                       role="button"
-                       data-slide="next">
-                        <i class="fa fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="col-12">
-                    <div id="carouselEyes" 
-                         class="carousel slide"
-                         data-ride="carousel"
-                         data-interval="false">
-
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/googlyeyes.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/girlface.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/eyelash.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="row">
-
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/angryeyes.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/tiredeyes.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
                     </div>
+                    <button class="buy-button" data-item="Googly Eyes" data-price="25">Buy</button>
+                </div>
+            </div>
+            
+            <!-- Item 2 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/girlface.png" alt="Girl Face">
+                </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
+                    </div>
+                    <button class="buy-button" data-item="Girl Face" data-price="25">Buy</button>
+                </div>
+            </div>
+            
+            <!-- Item 3 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/eyelash.png" alt="Eyelashes">
+                </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
+                    </div>
+                    <button class="buy-button" data-item="Eyelashes" data-price="25">Buy</button>
+                </div>
+            </div>
+            
+            <!-- Item 4 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/angryeyes.png" alt="Angry Eyes">
+                </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
+                    </div>
+                    <button class="buy-button" data-item="Angry Eyes" data-price="25">Buy</button>
+                </div>
+            </div>
+            
+            <!-- Item 5 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/tiredeyes.png" alt="Tired Eyes">
+                </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
+                    </div>
+                    <button class="buy-button" data-item="Tired Eyes" data-price="25">Buy</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="pt-5 pb-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-6">
-                    <h3 class="mb-3">Shapes</h3>
+    <!-- Shapes Section -->
+    <section class="shop-section">
+        <div class="section-header fade-in">
+            <h2 class="section-title">Shapes</h2>
+            <div class="section-controls">
+                <button class="btn btn-primary btn-control prev-btn" data-section="shapes">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button class="btn btn-primary btn-control next-btn" data-section="shapes">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="items-container" id="shapes-container">
+            <!-- Item 1 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/rockshape1.jpg" alt="Rock Shape 1">
                 </div>
-                <div class="col-6 text-right">
-                    <a class="btn btn-primary mb-3 mr-1" 
-                       href="#carouselShapes"
-                       role="button"
-                        data-slide="prev">
-                        <i class="fa fa-arrow-left"></i>
-                    </a>
-                    <a class="btn btn-primary mb-3"
-                       href="#carouselShapes"
-                       role="button"
-                       data-slide="next">
-                        <i class="fa fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="col-12">
-                    <div id="carouselShapes" 
-                         class="carousel slide"
-                         data-ride="carousel"
-                         data-interval="false">
-
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/rockshape1.jpg">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/blackrock.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/rockshape2.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="row">
-
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/rockshape3.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
                     </div>
+                    <button class="buy-button" data-item="Rock Shape 1" data-price="25">Buy</button>
+                </div>
+            </div>
+            
+            <!-- Item 2 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/blackrock.png" alt="Black Rock">
+                </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
+                    </div>
+                    <button class="buy-button" data-item="Black Rock" data-price="25">Buy</button>
+                </div>
+            </div>
+            
+            <!-- Item 3 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/rockshape2.png" alt="Rock Shape 2">
+                </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
+                    </div>
+                    <button class="buy-button" data-item="Rock Shape 2" data-price="25">Buy</button>
+                </div>
+            </div>
+            
+            <!-- Item 4 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/rockshape3.png" alt="Rock Shape 3">
+                </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
+                    </div>
+                    <button class="buy-button" data-item="Rock Shape 3" data-price="25">Buy</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="pt-5 pb-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-6">
-                    <h3 class="mb-3">Misc</h3>
+    <!-- Misc Section -->
+    <section class="shop-section">
+        <div class="section-header fade-in">
+            <h2 class="section-title">Misc</h2>
+            <div class="section-controls">
+                <button class="btn btn-primary btn-control prev-btn" data-section="misc">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button class="btn btn-primary btn-control next-btn" data-section="misc">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="items-container" id="misc-container">
+            <!-- Item 1 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/catears.png" alt="Cat Ears">
                 </div>
-                <div class="col-6 text-right">
-                    <a class="btn btn-primary mb-3 mr-1" 
-                       href="#carouselMisc"
-                       role="button"
-                        data-slide="prev">
-                        <i class="fa fa-arrow-left"></i>
-                    </a>
-                    <a class="btn btn-primary mb-3"
-                       href="#carouselMisc"
-                       role="button"
-                       data-slide="next">
-                        <i class="fa fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="col-12">
-                    <div id="carouselMisc" 
-                         class="carousel slide"
-                         data-ride="carousel"
-                         data-interval="false">
-
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/catears.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/wizardhat.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/piratehat.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="row">
-
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/crown.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">75</p>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
                     </div>
+                    <button class="buy-button" data-item="Cat Ears" data-price="25">Buy</button>
+                </div>
+            </div>
+            
+            <!-- Item 2 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/wizardhat.png" alt="Wizard Hat">
+                </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
+                    </div>
+                    <button class="buy-button" data-item="Wizard Hat" data-price="25">Buy</button>
+                </div>
+            </div>
+            
+            <!-- Item 3 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/piratehat.png" alt="Pirate Hat">
+                </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">25</span>
+                    </div>
+                    <button class="buy-button" data-item="Pirate Hat" data-price="25">Buy</button>
+                </div>
+            </div>
+            
+            <!-- Item 4 -->
+            <div class="shop-item">
+                <div class="item-image">
+                    <img src="../src/crown.png" alt="Crown">
+                </div>
+                <div class="item-details">
+                    <div class="price-tag">
+                        <img src="../src/moneyicon.png" alt="Currency" class="price-icon">
+                        <span class="price-value">75</span>
+                    </div>
+                    <button class="buy-button" data-item="Crown" data-price="75">Buy</button>
                 </div>
             </div>
         </div>
     </section>
 
-
-    <!-- Default Bootstrap Modal -->
-    <div id="purchaseModal" class="modal" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content">
+    <!-- Purchase Modal -->
+    <div class="modal-overlay" id="purchaseModal">
+        <div class="modal-container">
             <div class="modal-header">
-              <h5 class="modal-title">Purchase Confirmation</h5>
+                <h5 class="modal-title">Purchase Confirmation</h5>
             </div>
             <div class="modal-body">
-                <!-- mostly filler cause it gets rewritten -->
-              <p id="modalText">Are you sure you want to make this purchase?</p>
+                <p id="modalText">Are you sure you want to make this purchase?</p>
             </div>
             <div class="modal-footer">
-              <button id="cancelButton" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button id="confirmButton" type="button" class="btn btn-primary">Confirm</button>
+                <button id="cancelButton" class="btn btn-secondary">Cancel</button>
+                <button id="confirmButton" class="btn btn-primary">Confirm</button>
             </div>
-          </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer>
+        <div>© 2024 PetRock Inc. All rights reserved.</div>
+        <div class="links">
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy</a>
+        </div>
+    </footer>
 
-    <!-- JavaScript dependencies -->
-    <script type="text/javascript" src= "https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script type="text/javascript"
-        src= "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-    <script type="text/javascript"
-        src= "https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Fade in animations
+            gsap.to('.fade-in', { 
+                opacity: 1, 
+                y: 0, 
+                duration: 1,
+                stagger: 0.2,
+                scrollTrigger: {
+                    trigger: '.fade-in',
+                    start: 'top 90%',
+                }
+            });
+            
+            // Shop items animation
+            document.querySelectorAll('.shop-section').forEach(section => {
+                gsap.to(section.querySelectorAll('.shop-item'), {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top 80%',
+                    }
+                });
+            });
+            
+            // Carousel functionality
+            const itemsPerView = window.innerWidth > 992 ? 3 : window.innerWidth > 768 ? 2 : 1;
+            const itemWidth = 100 / itemsPerView;
+            
+            // Next and Prev buttons
+            const handleCarouselNavigation = (sectionId, direction) => {
+                const container = document.getElementById(`${sectionId}-container`);
+                const items = container.querySelectorAll('.shop-item');
+                const visibleItems = Math.min(itemsPerView, items.length);
+                
+                // Calculate the total number of "pages"
+                const totalPages = Math.ceil(items.length / visibleItems);
+                
+                // Get current position
+                const currentPosition = parseInt(container.getAttribute('data-position') || 0);
+                
+                // Calculate new position
+                let newPosition;
+                if (direction === 'next') {
+                    newPosition = (currentPosition + 1) % totalPages;
+                } else {
+                    newPosition = (currentPosition - 1 + totalPages) % totalPages;
+                }
+                
+                // Update position attribute
+                container.setAttribute('data-position', newPosition);
+                
+                // Apply transform
+                gsap.to(container, {
+                    x: -newPosition * (visibleItems * (100 / items.length)) + '%',
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            };
+            
+            // Setup event listeners for carousel navigation
+            document.querySelectorAll('.prev-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    handleCarouselNavigation(btn.dataset.section, 'prev');
+                });
+            });
+            
+            document.querySelectorAll('.next-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    handleCarouselNavigation(btn.dataset.section, 'next');
+                });
+            });
+            
+            // Purchase modal functionality
+            const modal = document.getElementById('purchaseModal');
+            const modalText = document.getElementById('modalText');
+            const cancelButton = document.getElementById('cancelButton');
+            const confirmButton = document.getElementById('confirmButton');
+            let currentItem = null;
+            
+            // Buy buttons
+            document.querySelectorAll('.buy-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const itemName = btn.dataset.item;
+                    const itemPrice = btn.dataset.price;
+                    currentItem = { name: itemName, price: itemPrice };
+                    
+                    modalText.textContent = `Are you sure you want to purchase ${itemName} for ${itemPrice} coins?`;
+                    modal.style.display = 'flex';
+                });
+            });
+            
+            // Modal buttons
+            cancelButton.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            confirmButton.addEventListener('click', () => {
+                // Process purchase
+                const userMoney = parseInt(document.getElementById('totalMoney').textContent);
+                const itemPrice = parseInt(currentItem.price);
+                
+                if (userMoney >= itemPrice) {
+                    document.getElementById('totalMoney').textContent = userMoney - itemPrice;
+                    modalText.textContent = `Successfully purchased ${currentItem.name}!`;
+                    
+                    // Change confirm button to close button
+                    confirmButton.textContent = 'Close';
+                    confirmButton.addEventListener('click', () => {
+                        modal.style.display = 'none';
+                        // Reset button text
+                        confirmButton.textContent = 'Confirm';
+                    }, { once: true });
+                } else {
+                    modalText.textContent = 'Not enough coins for this purchase!';
+                    
+                    // Change confirm button to close button
+                    confirmButton.textContent = 'Close';
+                    confirmButton.addEventListener('click', () => {
+                        modal.style.display = 'none';
+                        // Reset button text
+                        confirmButton.textContent = 'Confirm';
+                    }, { once: true });
+                }
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Button hover animations
+            const buttons = document.querySelectorAll('.btn');
+            
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    gsap.to(button, {
+                        scale: 1.05,
+                        duration: 0.3
+                    });
+                });
+                
+                button.addEventListener('mouseleave', () => {
+                    gsap.to(button, {
+                        scale: 1,
+                        duration: 0.3
+                    });
+                });
+            });
+        });
+    </script>
 </body>
-
 </html>

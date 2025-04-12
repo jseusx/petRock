@@ -1,76 +1,143 @@
-body {
-    background-color: #f8f9fa;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
+* {
     margin: 0;
-    font-family: 'Inter', sans-serif;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.navbar {
-    width: 100%;
+body {
+    color: #333;
+    line-height: 1.6;
+    overflow-x: hidden;
 }
 
-.navbar-brand {
-    padding-left: 15px;
-    font-weight: bold;
-    color: #343434
-}
-
-h3 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-}
-
-.login-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1; /* Allow this container to take available vertical space */
-}
-
-.login-container {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 15px;
-    /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);*/
-    box-shadow: 0px 0px 22px rgba(0, 0, 0, 0.18);
-    width: 350px;
-    text-align: center;
-}
-
-.header-logo {
-    height: 40px;
-    width: 40px;
-}
-
-/* Custom button styles */
-.btn-custom {
-    border-radius: 40px;
-    background-color: #007AFF;
-    border-color: #007AFF;
-    color: white;
-    margin-top: 20px;
-    /* This pushes the button 71px down from the password input */
-
-}
-
-.btn-custom:hover {
-    background-color: #0060d0;
-    border-color: #0056b3;
-    color: #ffffff;
-}
-
-.username-container {
-    margin-bottom: 25px
-}
-
-.create-account-link {
-    text-align: center;
-    margin-top: 10px;
-}
-.create-account-link a {
+a {
     text-decoration: none;
+    color: inherit;
+}
+
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 5%;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.logo img {
+    width: 36px;
+    margin-right: 10px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-left: 24px;
+}
+
+nav ul li a {
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #0084ff;
+}
+
+.sign-in {
+    font-weight: 500;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #0084ff;
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 132, 255, 0.2);
+}
+
+.btn-secondary {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ddd;
+    margin-left: 10px;
+}
+
+.btn-secondary:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer */
+footer {
+    padding: 20px 5%;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+    font-size: 14px;
+    color: #666;
+}
+
+footer .links {
+    display: flex;
+    gap: 20px;
+}
+
+footer a:hover {
+    color: #0084ff;
+}
+
+/* Animation Classes */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    nav ul {
+        margin-top: 15px;
+    }
 }
