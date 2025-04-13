@@ -36,6 +36,13 @@
   </div>
 
   <script>
+    // add via Jinja
+    // const userId = {{ user_id }}
+
+    // Will store tasks locally to allow client-side sorting
+    const tasks = [];
+
+    // Helper function to format due date
     function formatDueDate(dateValue) {
       const dateObj = new Date(dateValue);
       if (isNaN(dateObj)) return ""; // invalid date
@@ -49,27 +56,16 @@
       if (dateObj.getFullYear() !== currentYear) {
         formattedDate += `, ${dateObj.getFullYear()}`;
       }
-
       return formattedDate;
     }
 
+    // Function to re-render the task list sorted by due date(earliest at the top)
+    // If task has no due date it is put at the bottom
+    function renderTasks() {
+      const list = document.getElementById("todo-list");
+      list.innerHTML = ""; // Clears current list
 
-
-    // Grab references to our elements
-    const addButton = document.getElementById("add-btn");
-    const input = document.getElementById("todo-input");
-    const dateInput = document.getElementById("date-input");
-    const list = document.getElementById("todo-list");
-
-    // Adding an event listener to the "Add Task" button
-    addButton.addEventListener("click", function(){
-      const task = input.value.trim();
-      const dueDate = dateInput.value; // Returns the date in "YYYY-MM-DD" format
-      let formattedDate = "";
-
-      // Make sure a task is entered before adding (you can add additional checks if needed)
-      if (task !== "") {
-        // Create a new list item for the task
+      tasks.forEach(task => {
         const li = document.createElement("li");
         li.classList.add("list-group-item", "d-flex", "align-items-center");
 
@@ -80,14 +76,13 @@
 
         // Create a span for the task description
         const spanTask = document.createElement("span");
-        spanTask.textContent = task;
+        spanTask.textContent = taskDescription;
 
         // Create a span to display the due date (if one is selected)
         const spanDate = document.createElement("span");
-
-        if (dueDate) {
-          formattedDate = formatDueDate(dueDate);
-          spanDate.textContent = " Due: " + formattedDate;
+        if (task.completion_date) {
+          //formattedDate = formatDueDate(dueDate);
+          spanDate.textContent = " Due: " + formattedDate(task.completion_date);
         }
         // ms-auto pushes the due date to the far right of the flex container
         spanDate.classList.add("ms-auto");
@@ -99,11 +94,72 @@
 
         // Append the new task list item to the task list
         list.appendChild(li);
+      });
+    }
 
-        // Clear the input fields for the next task
-        input.value = "";
-        dateInput.value = "";
-      }
+    // Function to sort the tasks array by due date.
+    function sortTasks() {
+      tasks.sort((a,b) => {
+        // If a task is missing due date, put it on bottom
+        const aDate = a.completion_date ? new Date(a.completion_date) : new Date(8640000000000000);
+        const bDate = b.completion_date ? new Data(b.completion_date) : new Date(8640000000000000);
+        return aDate - bDate;
+      });
+    }
+
+
+    /*const addButton = document.getElementById("add-btn");
+    const input = document.getElementById("todo-input");
+    const dateInput = document.getElementById("date-input");
+    const list = document.getElementById("todo-list");*/
+
+    // Adding an event listener to the "Add Task" button
+    document.getElementById("add-btn").addEventListener("click",function(){
+      const taskDescription = document.getElementById("todo-input").value.trim();
+      const dueDate = document.getElementById("date-input").value; // Returns the date in "YYYY-MM-DD" format
+      //let formattedDate = "";
+
+      if(!taskDescription) return; // Do nothing if no task text
+
+      // Create payloid for the POST call 
+      // Task uses "completion_date" to store the due date
+      const payload = {
+        user_id: userId,
+        description: taskDescription,
+        completion_date: dueDate
+      };
+
+      fetch('/task', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+        return response.json();
+      })
+      .then(date => {
+        console.log(data.message);
+
+        // Update local tasks array for client-side sorting
+        tasks.push({
+          description: taskDescription,
+          completion_date: dueDate
+        });
+        sortTasks();
+        renderTasks();
+
+        // Clear the input fields.
+        document.getElementById("todo-input").value = "";
+        document.getElementById("date-input").value = "";
+      })
+      .catch(error => {
+        console.error('Error adding tasks:', error);
+      });
     });
   </script>
 </body>
