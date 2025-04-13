@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Todo Page with Due Dates</title>
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- External CSS (if needed) -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="index.html">
+      <img src="../src/rockpet.png" width="30" height="30" class="d-inline-block align-top me-2" alt="Logo">
+      PetRock
+    </a>
+  </nav>
+
+  <div class="container mt-4">
+    <h2>Todo List</h2>
+    <!-- Use Bootstrap input group to place text and date inputs side by side -->
+    <div class="input-group mb-3">
+      <input type="text" id="todo-input" class="form-control" placeholder="Enter a new task...">
+      <!-- HTML5 date input for calendar -->
+      <input type="date" id="date-input" class="form-control">
+      <button id="add-btn" class="btn btn-primary">Add Task</button>
+    </div>
+    <!-- Task list using Bootstrap list group for styling -->
+    <ul id="todo-list" class="list-group"></ul>
+  </div>
+
+  <script>
+    function formatDueDate(dateValue) {
+      const dateObj = new Date(dateValue);
+      if (isNaN(dateObj)) return ""; // invalid date
+
+      // Options to display month (short) and day.
+      const options = { month: 'short', day: 'numeric' };
+      let formattedDate = dateObj.toLocaleDateString('en-US', options);
+      
+      // Gets the current year
+      const currentYear = new Date().getFullYear();
+      if (dateObj.getFullYear() !== currentYear) {
+        formattedDate += `, ${dateObj.getFullYear()}`;
+      }
+
+      return formattedDate;
+    }
+
+
+
+    // Grab references to our elements
+    const addButton = document.getElementById("add-btn");
+    const input = document.getElementById("todo-input");
+    const dateInput = document.getElementById("date-input");
+    const list = document.getElementById("todo-list");
+
+    // Adding an event listener to the "Add Task" button
+    addButton.addEventListener("click", function(){
+      const task = input.value.trim();
+      const dueDate = dateInput.value; // Returns the date in "YYYY-MM-DD" format
+      let formattedDate = "";
+
+      // Make sure a task is entered before adding (you can add additional checks if needed)
+      if (task !== "") {
+        // Create a new list item for the task
+        const li = document.createElement("li");
+        li.classList.add("list-group-item", "d-flex", "align-items-center");
+
+        // Create a checkbox element
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.classList.add("form-check-input", "me-2");
+
+        // Create a span for the task description
+        const spanTask = document.createElement("span");
+        spanTask.textContent = task;
+
+        // Create a span to display the due date (if one is selected)
+        const spanDate = document.createElement("span");
+
+        if (dueDate) {
+          formattedDate = formatDueDate(dueDate);
+          spanDate.textContent = " Due: " + formattedDate;
+        }
+        // ms-auto pushes the due date to the far right of the flex container
+        spanDate.classList.add("ms-auto");
+
+        // Append the checkbox, task text, and date display to the list item
+        li.appendChild(checkbox);
+        li.appendChild(spanTask);
+        li.appendChild(spanDate);
+
+        // Append the new task list item to the task list
+        list.appendChild(li);
+
+        // Clear the input fields for the next task
+        input.value = "";
+        dateInput.value = "";
+      }
+    });
+  </script>
+</body>
+</html>
