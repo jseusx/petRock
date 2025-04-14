@@ -25,7 +25,7 @@ class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    #email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     balance = db.Column(db.Integer, default=0)
     rocks = db.relationship('Rock', backref='user', lazy=True)
@@ -88,7 +88,7 @@ def index():
     db.drop_all()
     db.create_all()
     hashed_password = generate_password_hash('1234', method='pbkdf2:sha256')
-    brady = User(username='Brady', email='bbromaghim@gmail.com', password_hash=hashed_password)
+    brady = User(username='Brady', password_hash=hashed_password)
 
     # Creating items to add to database
     items = [
@@ -303,7 +303,7 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         # Check the password against the stored hash
-        if user and check_password_hash(user.password, password):
+        if user and check_password_hash(user.password_hash, password):
             login_user(user)
             return redirect(url_for('index'))
         else:
@@ -312,8 +312,42 @@ def login():
             return render_template('login.html')
     return render_template('login.html')
 
-@app.route('/create_account')
+@app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
+    if request.method == 'POST':
+        # retrieve data from form
+        username = request.form.get('username')
+        password = request.form.get('password')
+        re_password = request.form.get('re-password')
+
+        if not username or not password or not re_password:
+            flash("All fields are required. Please fill out the form completely.", "danger")
+            return render_template('create_account.html')
+
+        # Query database for the user by username
+        user = User.query.filter_by(username=username).first()
+
+        # Check the username to see if it exists
+        # Also check if password was retyped correctly
+        if user:
+            flash("Username already exists please use a different one.", "danger")
+            return render_template('create_account.html')
+        
+        if password != re_password:
+            flash("Passwords did not match. Please try again.", "danger")
+            return render_template('create_account.html')
+        
+        # Hash the password and create a new user
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+        new_user = User(username=username, password_hash=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        #flash success message and redirect to login
+        flash("Account Created successfully! Rock On Dude.")
+        return redirect(url_for('login'))
+
+
     return render_template('create_account.html')
 
 @app.route('/creation')

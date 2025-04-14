@@ -23,19 +23,32 @@
         </a>
     </nav>
 
-    <!-- Login Container -->
+    <!-- Create_account Container -->
     <div class="login-wrapper">
         <div class="login-container">
             <h3 class="text-center mb-4">Sign In</h3>
-            <form>
+
+            <!-- Display Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('create_account')}}" method="post">
                 <div class="username-container">
-                    <input type="text" id="username" class="form-control" placeholder="Username">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
                 </div>
                 <div class="username-container">
-                    <input type="password" id="password" class="form-control" placeholder="Password">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
                 </div>
                 <div class="mb-3">
-                    <input type="re-password" id="re-password" class="form-control" placeholder="Repeat Password">
+                    <input type="password" id="re-password" name="re-password" class="form-control" placeholder="Repeat Password" required>
                 </div>
                 <button type="submit" class="btn btn-custom w-100">Create Account</button>
             </form>
