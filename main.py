@@ -4,9 +4,9 @@ import os
 import json
 import utils
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder= 'frontend/html', static_folder='frontend/src')
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://admin:root@localhost:5432/PetRock'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://admin:root@localhost:5432/PetRock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -18,7 +18,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     balance = db.Column(db.Integer, default=0)
-    rocks = db.relationship('Rock', backref='owner', lazy=True)
+    rocks = db.relationship('Rock', backref='user', lazy=True)
     user_unlocks = db.relationship('UserUnlocks', backref='user', lazy=True)
     tasks = db.relationship('Task', backref='user', lazy=True)
 
@@ -62,7 +62,7 @@ class Item(db.Model):
     __tablename__ = 'item'
     id = db.Column(db.Integer, primary_key=True)
     item_type = db.Column(db.String(50), nullable=False)
-    item_path = db.Column(db.String(50), nullable=False)
+    item_path = db.Column(db.String(50), nullable=False, unique = True)
     price = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
@@ -73,9 +73,21 @@ def index():
     db.drop_all()
     db.create_all()
     brady = User(username='Brady', email='bbromaghim@gmail.com', password='1234')
-    rock = Rock(name='Rocky', owner=brady.id)
-    db.session.add_all([brady, rock])
+
+    db.session.add(brady)
     db.session.commit()
+
+    #values cant be null so adding filler
+    # rock = Rock(
+    #     name='Rocky',
+    #     rockshape='circle', 
+    #     rockcolor='gray',    
+    #     rockmisc='sparkles', 
+    #     owner=brady.id      
+    # )
+    # db.session.add(rock)
+    # db.session.commit()
+
     print(User.query.all())
     return render_template('index.html', log_html=User.query.all())
 
@@ -224,3 +236,7 @@ def handle_task(task_id):
         db.session.commit()
         return {"message": f"Task {task.description} successfully deleted."}
 
+if __name__ == "__main__":
+    port = 5000  # Default Flask port
+    print(f"Server running at: http://127.0.0.1:{port}")
+    app.run(debug=True, port=port)
