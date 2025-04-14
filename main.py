@@ -243,6 +243,10 @@ def handle_task(task_id):
         db.session.commit()
         return {"message": f"Task {task.description} successfully deleted."}
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+    
 if __name__ == "__main__":
     port = 5000  # Default Flask port
     print(f"Server running at: http://127.0.0.1:{port}")
