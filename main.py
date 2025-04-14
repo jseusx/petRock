@@ -6,11 +6,13 @@ from collections import defaultdict
 import os
 import json
 import utils
+import secrets
 
 app = Flask(__name__, template_folder= 'frontend/html', static_folder='frontend/static')
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://admin:root@localhost:5432/PetRock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = secrets.token_hex(16)
 
 db = SQLAlchemy(app)
 
