@@ -4,7 +4,7 @@ import os
 import json
 import utils
 
-app = Flask(__name__, template_folder= 'frontend/html', static_folder='frontend/src')
+app = Flask(__name__, template_folder= 'frontend/html', static_folder='frontend/static')
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://admin:root@localhost:5432/PetRock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -77,12 +77,12 @@ def index():
     db.session.add(brady)
     db.session.commit()
 
-    #values cant be null so adding filler
+    #values cant be null example of what values should be
     # rock = Rock(
     #     name='Rocky',
-    #     rockshape='circle', 
+    #     rockshape='rockshape1', 
     #     rockcolor='gray',    
-    #     rockmisc='sparkles', 
+    #     rockmisc='wizardhat', 
     #     owner=brady.id      
     # )
     # db.session.add(rock)
@@ -90,6 +90,13 @@ def index():
 
     print(User.query.all())
     return render_template('index.html', log_html=User.query.all())
+
+@app.route('/shop', methods= ['GET', 'PUT'])
+def shop():
+
+    return render_template('shop.html')
+
+
 
 @app.route('/rock', methods=['POST'])
 def create_rock():
