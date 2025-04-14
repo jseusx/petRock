@@ -240,6 +240,9 @@ def handle_task(task_id):
 def login():
     return render_template('login.html')
 
+@app.route('/create_account')
+def create_account():
+    return render_template('create_account.html')
 
 @app.route('/shop', methods= ['GET', 'PUT'])
 def shop():
