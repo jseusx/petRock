@@ -22,23 +22,23 @@ login_manager.init_app(app)
 login_manager.login_view = 'login' # Sets the route for login page
 
 class User(UserMixin, db.Model):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     #email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     balance = db.Column(db.Integer, default=0)
-    rocks = db.relationship('Rock', backref='user', lazy=True)
-    user_unlocks = db.relationship('UserUnlocks', backref='user', lazy=True)
-    tasks = db.relationship('Task', backref='user', lazy=True)
+    rocks = db.relationship('Rock', backref='users', lazy=True)
+    user_unlocks = db.relationship('UserUnlocks', backref='users', lazy=True)
+    tasks = db.relationship('Task', backref='users', lazy=True)
 
     def __repr__(self):
         return '<User %r>' % self.username
 
 # Define a user loader function
 @login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+def load_user(users_id):
+    return User.query.get(int(users_id))
 
 class Rock(db.Model):
     __tablename__ = 'rock'
@@ -47,7 +47,7 @@ class Rock(db.Model):
     rockshape = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
     rockcolor = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
     rockmisc = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
-    owner = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    owner = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):
         return '<Rock %r>' % self.name
@@ -55,7 +55,7 @@ class Rock(db.Model):
 class UserUnlocks(db.Model):
     __tablename__ = 'userunlocks'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    users_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     unlock_name = db.Column(db.String(50), nullable=False)
     unlocked_at = db.Column(db.DateTime, server_default=db.func.now())
 
@@ -65,7 +65,7 @@ class UserUnlocks(db.Model):
 class Task(db.Model):
     __tablename__ = 'tasks'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    users_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     completion_date = db.Column(db.DateTime, nullable=False)
@@ -201,9 +201,9 @@ def create_user():
     return {"error": "Invalid input"}, 400
 
 # have to change this as well so that way password isnt just sent out in response
-@app.route('/user/<user_id>', methods=['GET', 'DELETE', 'PUT'])
-def handle_user(user_id):
-    user = User.query.get_or_404(user_id)
+@app.route('/user/<users_id>', methods=['GET', 'DELETE', 'PUT'])
+def handle_user(users_id):
+    user = User.query.get_or_404(users_id)
     if request.method == 'GET':
         return {
             "username": user.username,
@@ -262,7 +262,7 @@ def create_task():
     if request.is_json:
         data = request.get_json()
         task = Task(
-            user_id=data['user_id'],
+            users_id=data['users_id'],
             description=data['description'],
             completion_date=data['completion_date']
         )
@@ -276,13 +276,13 @@ def handle_task(task_id):
     task = Task.query.get_or_404(task_id)
     if request.method == 'GET':
         return {
-            "user_id": task.user_id,
+            "users_id": task.users_id,
             "description": task.description,
             "completion_date": task.completion_date
         }, 200
     if request.method == 'PUT':
         data = request.get_json()
-        task.user_id = data['user_id']
+        task.users_id = data['users_id']
         task.description = data['description']
         task.completion_date = data['completion_date']
         db.session.commit()
@@ -342,6 +342,7 @@ def create_account():
         new_user = User(username=username, password_hash=hashed_password)
         db.session.add(new_user)
         db.session.commit()
+        print("User added to the database successfully.")
 
         #flash success message and redirect to login
         flash("Account Created successfully! Rock On Dude.")
