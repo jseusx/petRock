@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Todo Page with Due Dates</title>
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- External CSS (if needed) -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="index.html">
+      <img src="../src/rockpet.png" width="30" height="30" class="d-inline-block align-top me-2" alt="Logo">
+      PetRock
+    </a>
+  </nav>
+
+  <div class="container mt-4">
+    <h2>Todo List</h2>
+    <!-- Use Bootstrap input group to place text and date inputs side by side -->
+    <div class="input-group mb-3">
+      <input type="text" id="todo-input" class="form-control" placeholder="Enter a new task...">
+      <!-- HTML5 date input for calendar -->
+       <div class="input-group-append">
+        <input type="date" id="date-input" class="form-control">
+       </div>
+      <button id="add-btn" class="btn btn-primary">Add Task</button>
+    </div>
+    <!-- Task list using Bootstrap list group for styling -->
+    <ul id="todo-list" class="list-group"></ul>
+  </div>
+
+  <script>
+    // add via Jinja
+    // const userId = {{ user_id }}
+
+    // Will store tasks locally to allow client-side sorting
+    const tasks = [];
+
+    // Helper function to format due date
+    function formatDueDate(dateValue) {
+      const dateObj = new Date(dateValue);
+      if (isNaN(dateObj)) return ""; // invalid date
+
+      // Options to display month (short) and day.
+      const options = { month: 'short', day: 'numeric' };
+      let formattedDate = dateObj.toLocaleDateString('en-US', options);
+      
+      // Gets the current year
+      const currentYear = new Date().getFullYear();
+      if (dateObj.getFullYear() !== currentYear) {
+        formattedDate += `, ${dateObj.getFullYear()}`;
+      }
+      return formattedDate;
+    }
+
+    // Function to re-render the task list sorted by due date(earliest at the top)
+    // If task has no due date it is put at the bottom
+    function renderTasks() {
+      const list = document.getElementById("todo-list");
+      list.innerHTML = ""; // Clears current list
+
+      tasks.forEach(task => {
+        const li = document.createElement("li");
+        li.classList.add("list-group-item", "d-flex", "align-items-center");
+
+        // Create a checkbox element
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.classList.add("form-check-input", "me-2");
+
+        // Create a span for the task description
+        const spanTask = document.createElement("span");
+        spanTask.textContent = taskDescription;
+
+        // Create a span to display the due date (if one is selected)
+        const spanDate = document.createElement("span");
+        if (task.completion_date) {
+          //formattedDate = formatDueDate(dueDate);
+          spanDate.textContent = " Due: " + formattedDate(task.completion_date);
+        }
+        // ms-auto pushes the due date to the far right of the flex container
+        spanDate.classList.add("ms-auto");
+
+        // Append the checkbox, task text, and date display to the list item
+        li.appendChild(checkbox);
+        li.appendChild(spanTask);
+        li.appendChild(spanDate);
+
+        // Append the new task list item to the task list
+        list.appendChild(li);
+      });
+    }
+
+    // Function to sort the tasks array by due date.
+    function sortTasks() {
+      tasks.sort((a,b) => {
+        // If a task is missing due date, put it on bottom
+        const aDate = a.completion_date ? new Date(a.completion_date) : new Date(8640000000000000);
+        const bDate = b.completion_date ? new Data(b.completion_date) : new Date(8640000000000000);
+        return aDate - bDate;
+      });
+    }
+
+
+    /*const addButton = document.getElementById("add-btn");
+    const input = document.getElementById("todo-input");
+    const dateInput = document.getElementById("date-input");
+    const list = document.getElementById("todo-list");*/
+
+    // Adding an event listener to the "Add Task" button
+    document.getElementById("add-btn").addEventListener("click",function(){
+      const taskDescription = document.getElementById("todo-input").value.trim();
+      const dueDate = document.getElementById("date-input").value; // Returns the date in "YYYY-MM-DD" format
+      //let formattedDate = "";
+
+      if(!taskDescription) return; // Do nothing if no task text
+
+      // Create payloid for the POST call 
+      // Task uses "completion_date" to store the due date
+      const payload = {
+        user_id: userId,
+        description: taskDescription,
+        completion_date: dueDate
+      };
+
+      fetch('/task', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+        return response.json();
+      })
+      .then(date => {
+        console.log(data.message);
+
+        // Update local tasks array for client-side sorting
+        tasks.push({
+          description: taskDescription,
+          completion_date: dueDate
+        });
+        sortTasks();
+        renderTasks();
+
+        // Clear the input fields.
+        document.getElementById("todo-input").value = "";
+        document.getElementById("date-input").value = "";
+      })
+      .catch(error => {
+        console.error('Error adding tasks:', error);
+      });
+    });
+  </script>
+</body>
+</html>
