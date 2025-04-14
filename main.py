@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
+from collections import defaultdict
 import os
 import json
 import utils
@@ -74,6 +75,30 @@ def index():
     db.create_all()
     brady = User(username='Brady', email='bbromaghim@gmail.com', password='1234')
 
+    # Creating items to add to database
+    items = [
+        {"id": 101 ,"item_type": "eye" ,"item_path": "googlyeyes.png", "price": 25},
+        {"id": 102,"item_type": "eye" ,"item_path": "girlface.png" , "price": 20},
+        {"id": 103,"item_type": "eye" ,"item_path": "eyelash.png" , "price": 20},
+        {"id": 104,"item_type": "eye","item_path": "angryeyes.png" , "price": 15},
+        {"id": 105,"item_type": "eye" ,"item_path": "tiredeyes.png" , "price": 15},
+        {"id": 201,"item_type": "shape" ,"item_path": "rockshape1.jpg" , "price": 35},
+        {"id": 202,"item_type": "shape","item_path": "blackrock.png", "price": 25},
+        {"id": 203,"item_type": "shape" ,"item_path": "rockshape2.png", "price": 40},
+        {"id":204,"item_type": "shape" ,"item_path": "rockshape3.png" , "price": 35},
+        {"id": 301,"item_type": "misc","item_path": "catears.png", "price": 30},
+        {"id": 302,"item_type": "misc","item_path": "wizardhat.png", "price": 40},
+        {"id": 303,"item_type": "misc","item_path": "piratehat.png" , "price": 50},
+        {"id": 304,"item_type": "misc" ,"item_path": "crown.png", "price": 75},
+    ]
+
+    for item_data in items:
+        item = Item(
+            item_type = item_data["item_type"],
+            item_path = item_data["item_path"],
+            price = item_data["price"]
+        )
+        db.session.add(item)
     db.session.add(brady)
     db.session.commit()
 
@@ -94,7 +119,14 @@ def index():
 @app.route('/shop', methods= ['GET', 'PUT'])
 def shop():
 
-    return render_template('shop.html')
+    items = Item.query.all()
+
+    #match item with their type
+    grouped_items = defaultdict(list)
+    for item in items:
+        grouped_items[item.item_type].append(item)
+
+    return render_template('shop.html', grouped_items=grouped_items)
 
 
 
