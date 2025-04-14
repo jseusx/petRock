@@ -91,13 +91,6 @@ def index():
     print(User.query.all())
     return render_template('index.html', log_html=User.query.all())
 
-@app.route('/shop', methods= ['GET', 'PUT'])
-def shop():
-
-    return render_template('shop.html')
-
-
-
 @app.route('/rock', methods=['POST'])
 def create_rock():
     if request.is_json:
@@ -246,6 +239,15 @@ def handle_task(task_id):
 @app.route('/login')
 def login():
     return render_template('login.html')
+
+
+@app.route('/shop', methods= ['GET', 'PUT'])
+def shop():
+    return render_template('shop.html')
+
+@app.route('/creation')
+def creation():
+    return render_template('creation.html')
     
 if __name__ == "__main__":
     port = 5000  # Default Flask port
