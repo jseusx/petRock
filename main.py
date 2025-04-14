@@ -1,5 +1,7 @@
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin, LoginManager, login_user, login_required
+from werkzeug.security import generate_password_hash, check_password_hash
 from collections import defaultdict
 import os
 import json
@@ -12,12 +14,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-class User(db.Model):
+# Login stuff using flask features
+login_manager  = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login' # Sets the route for login page
+
+class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
     balance = db.Column(db.Integer, default=0)
     rocks = db.relationship('Rock', backref='user', lazy=True)
     user_unlocks = db.relationship('UserUnlocks', backref='user', lazy=True)
@@ -25,6 +32,11 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+# Define a user loader function
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 class Rock(db.Model):
     __tablename__ = 'rock'
@@ -73,7 +85,8 @@ class Item(db.Model):
 def index():
     db.drop_all()
     db.create_all()
-    brady = User(username='Brady', email='bbromaghim@gmail.com', password='1234')
+    hashed_password = generate_password_hash('1234', method='pbkdf2:sha256')
+    brady = User(username='Brady', email='bbromaghim@gmail.com', password_hash=hashed_password)
 
     # Creating items to add to database
     items = [
@@ -119,14 +132,7 @@ def index():
 @app.route('/shop', methods= ['GET', 'PUT'])
 def shop():
 
-    items = Item.query.all()
-
-    #match item with their type
-    grouped_items = defaultdict(list)
-    for item in items:
-        grouped_items[item.item_type].append(item)
-
-    return render_template('shop.html', grouped_items=grouped_items)
+    return render_template('shop.html')
 
 
 
@@ -174,16 +180,18 @@ def handle_rocks(rock_id):
 def create_user():
     if request.is_json:
         data = request.get_json()
+        hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256') # hash password
         user = User(
             username=data['username'],
             email=data['email'],
-            password=data['password']
+            password_hash=hashed_password
         )
         db.session.add(user)
         db.session.commit()
         return {"message": "User added successfully"}, 201
     return {"error": "Invalid input"}, 400
 
+# have to change this as well so that way password isnt just sent out in response
 @app.route('/user/<user_id>', methods=['GET', 'DELETE', 'PUT'])
 def handle_user(user_id):
     user = User.query.get_or_404(user_id)
@@ -275,6 +283,38 @@ def handle_task(task_id):
         db.session.commit()
         return {"message": f"Task {task.description} successfully deleted."}
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # retrieve form data
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        # Query database for the user by username
+        user = User.query.filter_by(username=username).first()
+
+        # Check the password against the stored hash
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            return redirect(url_for('index'))
+        else:
+            # flash message
+            flash("Invalid username or password.", "danger")
+            return render_template('login.html')
+    return render_template('login.html')
+
+@app.route('/create_account')
+def create_account():
+    return render_template('create_account.html')
+
+@app.route('/shop', methods= ['GET', 'PUT'])
+def shop():
+    return render_template('shop.html')
+
+@app.route('/creation')
+def creation():
+    return render_template('creation.html')
+    
 if __name__ == "__main__":
     port = 5000  # Default Flask port
     print(f"Server running at: http://127.0.0.1:{port}")
