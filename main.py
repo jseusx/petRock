@@ -132,7 +132,14 @@ def index():
 @app.route('/shop', methods= ['GET', 'PUT'])
 def shop():
 
-    return render_template('shop.html')
+    items = Item.query.all()
+
+    #match item with their type
+    grouped_items = defaultdict(list)
+    for item in items:
+        grouped_items[item.item_type].append(item)
+
+    return render_template('shop.html', grouped_items=grouped_items)
 
 
 
@@ -306,10 +313,6 @@ def login():
 @app.route('/create_account')
 def create_account():
     return render_template('create_account.html')
-
-@app.route('/shop', methods= ['GET', 'PUT'])
-def shop():
-    return render_template('shop.html')
 
 @app.route('/creation')
 def creation():
