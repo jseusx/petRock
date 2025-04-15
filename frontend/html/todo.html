@@ -7,15 +7,15 @@
   <!-- Bootstrap CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- External CSS (if needed) -->
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='../static/css/styles.css') }}">
   <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- Navbar -->
   <nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" href="index.html">
-      <img src="../src/rockpet.png" width="30" height="30" class="d-inline-block align-top me-2" alt="Logo">
+    <a class="navbar-brand" href="{{ url_for('index') }}">
+      <img src="/static/src/rockpet.png" width="30" height="30" class="d-inline-block align-top me-2" alt="Logo">
       PetRock
     </a>
   </nav>
@@ -29,7 +29,7 @@
        <div class="input-group-append">
         <input type="date" id="date-input" class="form-control">
        </div>
-      <button id="add-btn" class="btn btn-primary">Add Task</button>
+      <button id="add-btn" name="add-btn" class="btn btn-primary">Add Task</button>
     </div>
     <!-- Task list using Bootstrap list group for styling -->
     <ul id="todo-list" class="list-group"></ul>
@@ -37,10 +37,11 @@
 
   <script>
     // add via Jinja
-    // const userId = {{ user_id }}
+    const userId = {{ users_id }};
+    
+    const tasksFromDb = JSON.parse('{{ tasks | tojson | safe }}');
 
-    // Will store tasks locally to allow client-side sorting
-    const tasks = [];
+    const tasks = tasksFromDb.slice();
 
     // Helper function to format due date
     function formatDueDate(dateValue) {
@@ -76,13 +77,13 @@
 
         // Create a span for the task description
         const spanTask = document.createElement("span");
-        spanTask.textContent = taskDescription;
+        spanTask.textContent = task.description;
 
         // Create a span to display the due date (if one is selected)
         const spanDate = document.createElement("span");
         if (task.completion_date) {
           //formattedDate = formatDueDate(dueDate);
-          spanDate.textContent = " Due: " + formattedDate(task.completion_date);
+          spanDate.textContent = " Due: " + formatDueDate(task.completion_date);
         }
         // ms-auto pushes the due date to the far right of the flex container
         spanDate.classList.add("ms-auto");
@@ -102,12 +103,14 @@
       tasks.sort((a,b) => {
         // If a task is missing due date, put it on bottom
         const aDate = a.completion_date ? new Date(a.completion_date) : new Date(8640000000000000);
-        const bDate = b.completion_date ? new Data(b.completion_date) : new Date(8640000000000000);
+        const bDate = b.completion_date ? new Date(b.completion_date) : new Date(8640000000000000);
         return aDate - bDate;
       });
     }
 
-
+    // Sort and render tasks when page first loads
+    sortTasks();
+    renderTasks();
     /*const addButton = document.getElementById("add-btn");
     const input = document.getElementById("todo-input");
     const dateInput = document.getElementById("date-input");
@@ -121,10 +124,12 @@
 
       if(!taskDescription) return; // Do nothing if no task text
 
+      console.log(taskDescription)
+      console.log(dueDate)
       // Create payloid for the POST call 
       // Task uses "completion_date" to store the due date
       const payload = {
-        user_id: userId,
+        users_id: userId,
         description: taskDescription,
         completion_date: dueDate
       };
@@ -142,7 +147,7 @@
         }
         return response.json();
       })
-      .then(date => {
+      .then(data => {
         console.log(data.message);
 
         // Update local tasks array for client-side sorting

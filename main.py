@@ -67,7 +67,6 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     users_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     description = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
     completion_date = db.Column(db.DateTime, nullable=False)
 
     def __repr__(self):
@@ -432,7 +431,15 @@ def creation():
 @app.route('/todo')
 @login_required
 def todo():
-    return render_template('todo.html')
+    user_tasks = Task.query.filter_by(users_id=current_user.id).all()
+    tasks_list = [{"description": task.description, "completion_date": task.completion_date} for task in user_tasks]
+    '''for task in user_tasks:
+        tasks_data.append({
+            "description": task.description,
+            "completion_date": task.completion_date.strftime("%Y-%m-%d") if task.completion_date else ""
+        })'''
+    return render_template('todo.html', users_id=current_user.id, tasks=tasks_list)
+    #return render_template('todo.html', users_id=current_user.id, tasks=json.dumps(tasks_data))
     
 if __name__ == "__main__":
     port = 5000  # Default Flask port
