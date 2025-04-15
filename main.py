@@ -294,6 +294,7 @@ def handle_task(task_id):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print(check_password_hash('<stored_hash>', 'test'))  # Replace <stored_hash> with the actual hash from the database
     if request.method == 'POST':
         # retrieve form data
         username = request.form.get('username')
@@ -302,6 +303,9 @@ def login():
         # Query database for the user by username
         user = User.query.filter_by(username=username).first()
 
+        # print(user.password_hash)
+        print(password)
+        print(user)
         # Check the password against the stored hash
         if user and check_password_hash(user.password_hash, password):
             login_user(user)
