@@ -24,7 +24,7 @@
     <h2>Todo List</h2>
     <!-- Use Bootstrap input group to place text and date inputs side by side -->
     <div class="input-group mb-3">
-      <input type="text" id="todo-input" class="form-control" placeholder="Enter a new task...">
+      <input type="text" id="todo-input" class="form-control" placeholder="Enter a new task..." reuired>
       <!-- HTML5 date input for calendar -->
        <div class="input-group-append">
         <input type="date" id="date-input" class="form-control">
@@ -60,6 +60,31 @@
       return formattedDate;
     }
 
+    function deleteTask(taskId) {
+      console.log(`Deleting task with ID: ${taskId}`); // Debugging
+
+      fetch(`/task/${taskId}`, {
+        method: 'DELETE'
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to delete task.');
+          }
+          return response.json(); // Parse JSON response from the server
+        })
+        .then(data => {
+          console.log(data.message); // Log success message
+
+          const index = tasks.findIndex(task => task.id === taskId);
+          if (index !== -1) {
+            tasks.splice(index, 1); // Remove the task from the local array
+          }
+          renderTasks(); // Re-render the task list
+        })
+        .catch(error => {
+          console.error('Error deleting task:', error);
+        });
+    }
     // Function to re-render the task list sorted by due date(earliest at the top)
     // If task has no due date it is put at the bottom
     function renderTasks() {
@@ -74,6 +99,14 @@
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.classList.add("form-check-input", "me-2");
+        checkbox.setAttribute("data-task-id", task.id);
+
+        // When checkbox clicked, delete task
+        checkbox.addEventListener("change", function() {
+          if (this.checked) {
+            deleteTask(task.id);
+          }
+        });
 
         // Create a span for the task description
         const spanTask = document.createElement("span");
@@ -152,10 +185,13 @@
         console.log(data.message);
 
         // Update local tasks array for client-side sorting
-        tasks.push({
+        const newTask = {
+          id: data.id, // Temporary id, ideally return the id from the post response
           description: taskDescription,
-          completion_date: dueDate ? dueDate : null,
-        });
+          completion_date: dueDate ? dueDate: null
+        }
+        
+        tasks.push(newTask);
         sortTasks();
         renderTasks();
 

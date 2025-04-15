@@ -323,7 +323,7 @@ def create_task():
         )
         db.session.add(task)
         db.session.commit()
-        return {"message": "Task added successfully"}, 201
+        return {"message": "Task added successfully", "id": task.id}, 201
     return {"error": "Invalid input"}, 400
 
 @app.route('/task/<task_id>', methods=['GET', 'DELETE', 'PUT'])
@@ -343,10 +343,11 @@ def handle_task(task_id):
         db.session.commit()
         return {"message": f"Task {task.description} successfully updated"}
     if request.method == 'DELETE':
+        if not task:
+            return {"error": "Task not found"}, 404
         db.session.delete(task)
         db.session.commit()
-        return {"message": f"Task {task.description} successfully deleted."}
-
+        return {"message": f"Task {task_id} deleted successfully"}, 200
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     print(check_password_hash('<stored_hash>', 'test'))  # Replace <stored_hash> with the actual hash from the database
@@ -432,12 +433,11 @@ def creation():
 @login_required
 def todo():
     user_tasks = Task.query.filter_by(users_id=current_user.id).all()
-    tasks_list = [{"description": task.description, "completion_date": task.completion_date} for task in user_tasks]
-    '''for task in user_tasks:
-        tasks_data.append({
-            "description": task.description,
-            "completion_date": task.completion_date.strftime("%Y-%m-%d") if task.completion_date else ""
-        })'''
+    tasks_list = [{
+        "id": task.id,
+        "description": task.description, 
+        "completion_date": task.completion_date} for task in user_tasks]
+
     return render_template('todo.html', users_id=current_user.id, tasks=tasks_list)
     #return render_template('todo.html', users_id=current_user.id, tasks=json.dumps(tasks_data))
     
