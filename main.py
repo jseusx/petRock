@@ -138,10 +138,7 @@ def index():
     print(User.query.all())
     return render_template('index.html', log_html=User.query.all())
 
-@app.route('/shop/pay', methods=['POST'])
-@login_required
-def pay():
-    
+
 
 # unlocks a new item from the shop, with a user_id and item_id json object as input
 @app.route('/shop/unlock', methods = ['POST'])
