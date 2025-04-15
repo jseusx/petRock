@@ -88,8 +88,8 @@ def initialize_database():
         db.drop_all()
         db.create_all()
 
-        hashed_password = generate_password_hash('1234', method='pbkdf2:sha256', balance=200)
-        brady = User(username='Brady', password_hash=hashed_password)
+        hashed_password = generate_password_hash('1234', method='pbkdf2:sha256')
+        brady = User(username='Brady', password_hash=hashed_password, balance=200)
 
         # Creating items to add to database
         items = [
