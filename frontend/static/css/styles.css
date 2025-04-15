@@ -74,3 +74,27 @@ h3 {
 .create-account-link a {
     text-decoration: none;
 }
+
+/* Custom style for error messages */
+.alert-danger {
+    background-color: #f8d7da; /* Light red background */
+    color: #721c24; /* Dark red text */
+    border-color: #f5c6cb; /* Light red border */
+}
+
+.alert-danger:hover {
+    background-color: #f5c6cb; /* Slightly darker red on hover */
+    color: #491217; /* Darker text on hover */
+}
+
+/* Custom style for success messages */
+.alert-success {
+    background-color: #d4edda; /* Light green background */
+    color: #155724; /* Dark green text */
+    border-color: #c3e6cb; /* Light green border */
+}
+
+.alert-success:hover {
+    background-color: #c3e6cb; /* Slightly darker green on hover */
+    color: #0b2e13; /* Darker text on hover */
+}
