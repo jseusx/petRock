@@ -2,11 +2,6 @@ document.addEventListener("DOMContentLoaded", function(){
     // Get the modal
 var modal = document.getElementById("purchaseModal");
 
-// Get content of modal
-// var confirmButton = document.getElementById("confirmButton");
-// var cancelButton = document.getElementById("cancelButton");
-
-//NOTE: for demo purposes, this value really should be read from the database so its user specific
 var totalMoneyElement = document.getElementById("totalMoney");
 var totalMoney = parseInt(totalMoneyElement.textContent);
 
@@ -16,26 +11,50 @@ images.forEach(function(img){
     img.onclick = function(){
         var priceElement = img.parentElement.querySelector(".price-value");
         var price = parseInt(priceElement.textContent);
+        var itemId = img.getAttribute("data-item-id")
     
         modal.style.display = "block";
+        var modalText = document.getElementById("modalText")
         // NOTE change name of currency once determined
-        modalText.innerHTML = `Confirm Purchase of item for ${price} dabloons?`
+        modalText.innerHTML = `Confirm Purchase of item for ${price} Rockbux?`
 
         //check if you're not a brokie b4 purchase
+        var confirmButton =document.getElementById("confirmButton");
         confirmButton.onclick = function() {
             if (totalMoney >= price) {
-                totalMoney -= price;
-                totalMoneyElement.textContent = totalMoney;
-                modalText.innerHTML = "Purchase confirmed!"
-            }
-            else {
-                modalText.innerHTML = "You can't afford this!"
-            }
+                //send POST request to /shop/unlock route
+                fetch('/shop/unlock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ item_id: itemId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        totalMoney = data.new_balance;
+                        totalMoneyElement.textContent = totalMoney;
+                        modalText.innerHTML = "Purchase confirmed!";
+                    } else {
+                        modalText.innerHTML = data.error || "An error occurred.";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    modalText.innerHTML = "An error occurred.";
+                });
 
             // Modal auto closes 2 seconds after confirmation or failed purchase
             setTimeout(function (){
                 modal.style.display = "none";
-            }, 2000)
+            }, 2000);
+
+
+
+            } else {
+                modalText.innerHTML = "You can't afford this!"
+            }     
         }; 
     };  
 });
@@ -48,7 +67,6 @@ cancelButton.onclick = function () {
 
 
 
-//found this cool thing randomly it closes the model if you click outside of it
 window.onclick = function (event) {
     if (event.target == modal) {
       modal.style.display = "none";
