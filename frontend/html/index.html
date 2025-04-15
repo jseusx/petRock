@@ -399,7 +399,13 @@
                 <li><a href="{{ url_for('index') }}">Home</a></li>
                 <li><a href="{{ url_for('creation') }}">Community</a></li>
                 <li><a href="{{ url_for('shop') }}">Store</a></li>
-                <li><a href="{{ url_for('login') }}" class="sign-in">Sign In</a></li>
+                <li>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('logout') }}" class="sign-in">Log out</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="sign-in">Sign In</a>
+                    {% endif %}
+                </li>
             </ul>
         </nav>
     </header>
@@ -411,7 +417,7 @@
             <p>Manage your tasks, stay motivated, and reward yourself with a virtual pet rock that cheers you on every step of the way.</p>
             <div class="hero-buttons">
                 <a href="{{ url_for('login') }}" class="btn btn-primary">Get Started</a>
-                <button class="btn btn-secondary">View Tasks</button>
+                <a href="{{ url_for('todo') }}" class="btn btn-secondary">View Tasks</a>
             </div>
         </div>
         <div class="hero-image">

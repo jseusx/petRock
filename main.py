@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, LoginManager, login_user, login_required
+from flask_login import UserMixin, LoginManager, login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from collections import defaultdict
 import os
@@ -83,39 +83,47 @@ class Item(db.Model):
     def __repr__(self):
         return '<Item %r>' % self.item_path
 
+def initialize_database():
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+
+        hashed_password = generate_password_hash('1234', method='pbkdf2:sha256')
+        brady = User(username='Brady', password_hash=hashed_password)
+
+        # Creating items to add to database
+        items = [
+            {"id": 101 ,"item_type": "eye" ,"item_path": "googlyeyes.png", "price": 25},
+            {"id": 102,"item_type": "eye" ,"item_path": "girlface.png" , "price": 20},
+            {"id": 103,"item_type": "eye" ,"item_path": "eyelash.png" , "price": 20},
+            {"id": 104,"item_type": "eye","item_path": "angryeyes.png" , "price": 15},
+            {"id": 105,"item_type": "eye" ,"item_path": "tiredeyes.png" , "price": 15},
+            {"id": 201,"item_type": "shape" ,"item_path": "rockshape1.jpg" , "price": 35},
+            {"id": 202,"item_type": "shape","item_path": "blackrock.png", "price": 25},
+            {"id": 203,"item_type": "shape" ,"item_path": "rockshape2.png", "price": 40},
+            {"id":204,"item_type": "shape" ,"item_path": "rockshape3.png" , "price": 35},
+            {"id": 301,"item_type": "misc","item_path": "catears.png", "price": 30},
+            {"id": 302,"item_type": "misc","item_path": "wizardhat.png", "price": 40},
+            {"id": 303,"item_type": "misc","item_path": "piratehat.png" , "price": 50},
+            {"id": 304,"item_type": "misc" ,"item_path": "crown.png", "price": 75},
+        ]
+
+        for item_data in items:
+            item = Item(
+                item_type = item_data["item_type"],
+                item_path = item_data["item_path"],
+                price = item_data["price"]
+            )
+            db.session.add(item)
+        db.session.add(brady)
+        db.session.commit()
+
+        print("Database initialized succesfully.")
+
+
+
 @app.route('/')
 def index():
-    db.drop_all()
-    db.create_all()
-    hashed_password = generate_password_hash('1234', method='pbkdf2:sha256')
-    brady = User(username='Brady', password_hash=hashed_password)
-
-    # Creating items to add to database
-    items = [
-        {"id": 101 ,"item_type": "eye" ,"item_path": "googlyeyes.png", "price": 25},
-        {"id": 102,"item_type": "eye" ,"item_path": "girlface.png" , "price": 20},
-        {"id": 103,"item_type": "eye" ,"item_path": "eyelash.png" , "price": 20},
-        {"id": 104,"item_type": "eye","item_path": "angryeyes.png" , "price": 15},
-        {"id": 105,"item_type": "eye" ,"item_path": "tiredeyes.png" , "price": 15},
-        {"id": 201,"item_type": "shape" ,"item_path": "rockshape1.jpg" , "price": 35},
-        {"id": 202,"item_type": "shape","item_path": "blackrock.png", "price": 25},
-        {"id": 203,"item_type": "shape" ,"item_path": "rockshape2.png", "price": 40},
-        {"id":204,"item_type": "shape" ,"item_path": "rockshape3.png" , "price": 35},
-        {"id": 301,"item_type": "misc","item_path": "catears.png", "price": 30},
-        {"id": 302,"item_type": "misc","item_path": "wizardhat.png", "price": 40},
-        {"id": 303,"item_type": "misc","item_path": "piratehat.png" , "price": 50},
-        {"id": 304,"item_type": "misc" ,"item_path": "crown.png", "price": 75},
-    ]
-
-    for item_data in items:
-        item = Item(
-            item_type = item_data["item_type"],
-            item_path = item_data["item_path"],
-            price = item_data["price"]
-        )
-        db.session.add(item)
-    db.session.add(brady)
-    db.session.commit()
 
     #values cant be null example of what values should be
     # rock = Rock(
@@ -308,7 +316,7 @@ def login():
         print(user)
         # Check the password against the stored hash
         if user and check_password_hash(user.password_hash, password):
-            print("Logging in for user: ", username)
+            print("Logging in for user:", username)
             login_user(user)
             return redirect(url_for('index'))
         else:
@@ -316,6 +324,14 @@ def login():
             flash("Invalid username or password.", "danger")
             return render_template('login.html')
     return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    print("logging out")
+    return redirect(url_for('index'))
+
 
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
@@ -359,8 +375,14 @@ def create_account():
 @app.route('/creation')
 def creation():
     return render_template('creation.html')
+
+@app.route('/todo')
+@login_required
+def todo():
+    return render_template('todo.html')
     
 if __name__ == "__main__":
     port = 5000  # Default Flask port
     print(f"Server running at: http://127.0.0.1:{port}")
+    initialize_database()
     app.run(debug=True, port=port)
