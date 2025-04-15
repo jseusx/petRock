@@ -308,6 +308,7 @@ def login():
         print(user)
         # Check the password against the stored hash
         if user and check_password_hash(user.password_hash, password):
+            print("Logging in for user: ", username)
             login_user(user)
             return redirect(url_for('index'))
         else:
