@@ -397,7 +397,7 @@
         <nav>
             <ul>
                 <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('creation') }}">Community</a></li>
+                <li><a href="{{ url_for('creation') }}">Create a Rock</a></li>
                 <li><a href="{{ url_for('shop') }}">Store</a></li>
                 <li>
                     {% if current_user.is_authenticated %}
@@ -471,7 +471,7 @@
             <p>Your pet isn't just an ordinary rock - it's your own personal entourage. As you complete tasks, your rock will motivate you to keep going and celebrate your wins.</p>
             <div style="margin-top: 20px;">
                 <a href="{{ url_for('todo') }}" class="btn btn-secondary">View Tasks</a>
-                <a href="{{ url_for('creation') }}" class="btn btn-secondary">Create Rock</a>
+                <a href="{{ url_for('creation') }}" class="btn btn-secondary">Create a Rock</a>
             </div>
         </div>
     </section>
