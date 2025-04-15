@@ -470,8 +470,8 @@
         <div class="achievements-image">
             <p>Your pet isn't just an ordinary rock - it's your own personal entourage. As you complete tasks, your rock will motivate you to keep going and celebrate your wins.</p>
             <div style="margin-top: 20px;">
-                <button class="btn btn-secondary">View Tasks</button>
-                <button class="btn btn-secondary">Join Community</button>
+                <a href="{{ url_for('todo') }}" class="btn btn-secondary">View Tasks</a>
+                <a href="{{ url_for('creation') }}" class="btn btn-secondary">Join Community</a>
             </div>
         </div>
     </section>
@@ -483,7 +483,7 @@
             <p>Join other users who have transformed their task management with a pet rock companion.</p>
         </div>
         <div class="cta-buttons">
-            <button class="btn btn-primary">Sign Up Free</button>
+            <a href="{{ url_for('create_account') }}" class="btn btn-primary">Sign Up Free</a>
             <button class="btn btn-secondary">Try Demo</button>
         </div>
     </section>
