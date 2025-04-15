@@ -350,7 +350,7 @@ def create_account():
         print("User added to the database successfully.")
 
         #flash success message and redirect to login
-        flash("Account Created successfully! Rock On Dude.")
+        flash("Account created successfully!", "success")
         return redirect(url_for('login'))
 
 
