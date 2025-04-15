@@ -58,8 +58,7 @@
 
     <div class="totalIcon">
         <img src="/static/src/moneyicon.png" width="150" height=auto style="float:left">
-        <!-- NOTE filler value for now prob should read value from user table one database created -->
-        <p id="totalMoney" style="font-size:50px; font-weight: bold;">75</p>
+        <p id="totalMoney" style="font-size:50px; font-weight: bold;"> {{ user_balance }} </p>
     </div>
 
     <!-- This was painful to have to rewrite -->
@@ -99,7 +98,9 @@
                                     <div class="col-md-4 mb-3">
                                         <div class="card">
                                             <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="{{ item.item_type }}" src="/static/src/{{ item.item_path }}">
+                                                <img class="img-fluid carousel-img" alt="{{ item.item_type }}" 
+                                                src="/static/src/{{ item.item_path }}"
+                                                data-item-id="{{ item.id }}">
                                                 <img src="/static/src/moneyicon.png" class="priceimg">
                                                 <p class="price-value">{{ item.price }}</p>
                                             </div>

@@ -1,6 +1,6 @@
-from flask import Flask, request, render_template, redirect, url_for, flash
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, LoginManager, login_user, login_required
+from flask_login import UserMixin, LoginManager, login_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from collections import defaultdict
 import os
@@ -88,7 +88,7 @@ def index():
     db.drop_all()
     db.create_all()
     hashed_password = generate_password_hash('1234', method='pbkdf2:sha256')
-    brady = User(username='Brady', password_hash=hashed_password)
+    brady = User(username='Brady', password_hash=hashed_password, balance=200)
 
     # Creating items to add to database
     items = [
@@ -131,7 +131,32 @@ def index():
     print(User.query.all())
     return render_template('index.html', log_html=User.query.all())
 
-@app.route('/shop', methods= ['GET', 'PUT'])
+# unlocks a new item from the shop, with a user_id and item_id json object as input
+@app.route('/shop/unlock', methods = ['POST'])
+@login_required
+def unlock_item():
+    data = request.get_json()
+    item_id = data['item_id']
+    
+    user = current_user
+
+    item = Item.query.get(item_id)
+    
+    if user.balance >= item.price:
+        user.balance -= item.price
+        unlock = UserUnlocks(
+            users_id=user.id,
+            unlock_name=item.item_path
+        )
+        db.session.add(unlock)
+        db.session.commit()
+        return {"message": "Item unlocked successfully", "new_balance": user.balance}, 201
+    else:
+        return {"error": "Insufficient balance"}, 400
+
+
+@app.route('/shop', methods= ['GET'])
+@login_required
 def shop():
 
     items = Item.query.all()
@@ -141,7 +166,7 @@ def shop():
     for item in items:
         grouped_items[item.item_type].append(item)
 
-    return render_template('shop.html', grouped_items=grouped_items)
+    return render_template('shop.html', grouped_items=grouped_items, user_balance = current_user.balance)
 
 
 
@@ -222,6 +247,29 @@ def handle_user(users_id):
         db.session.commit()
         return {"message": f"User {user.username} successfully deleted."}
 
+# takes as input, a user id and an item type (eye, shape, misc) and returns a json object with all the items of that type that the user has unlocked
+@app.route('/user/<user_id>/unlocks/<string:item_type>', methods=['GET'])
+def get_user_unlocked(user_id, item_type):
+    user = User.query.get_or_404(user_id)
+    unlocked_items = (
+        db.session.query(Item).join(UserUnlocks,Item.id == UserUnlocks.item_id)
+        .filter(UserUnlocks.user_id == user.id, Item.item_type == item_type).all()
+    )
+    item_list = [
+        {
+            'id':item.id,
+            'item_type': item.item_type,
+            'item_path': item.item_path,
+            'price': item.price
+        }
+        for item in unlocked_items
+    ]
+    return jsonify({
+                   'user_id': user.id,
+                   'item_type': item_type,
+                   'unlocked_items': item_list}
+    )
+
 @app.route('/item', methods=['POST'])
 def create_item():
     if request.is_json:
@@ -294,6 +342,7 @@ def handle_task(task_id):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print(check_password_hash('<stored_hash>', 'test'))  # Replace <stored_hash> with the actual hash from the database
     if request.method == 'POST':
         # retrieve form data
         username = request.form.get('username')
@@ -301,6 +350,10 @@ def login():
 
         # Query database for the user by username
         user = User.query.filter_by(username=username).first()
+
+        # print(user.password_hash)
+        print(password)
+        print(user)        
 
         # Check the password against the stored hash
         if user and check_password_hash(user.password_hash, password):
