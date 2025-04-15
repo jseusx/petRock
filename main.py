@@ -67,7 +67,7 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     users_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     description = db.Column(db.String(255), nullable=False)
-    completion_date = db.Column(db.DateTime, nullable=False)
+    completion_date = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return '<Task %r>' % self.description
@@ -319,7 +319,7 @@ def create_task():
         task = Task(
             users_id=data['users_id'],
             description=data['description'],
-            completion_date=data['completion_date']
+            completion_date=data.get('completion_date')
         )
         db.session.add(task)
         db.session.commit()

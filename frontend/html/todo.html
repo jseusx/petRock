@@ -81,8 +81,9 @@
 
         // Create a span to display the due date (if one is selected)
         const spanDate = document.createElement("span");
+
+        // If a due date exists display it
         if (task.completion_date) {
-          //formattedDate = formatDueDate(dueDate);
           spanDate.textContent = " Due: " + formatDueDate(task.completion_date);
         }
         // ms-auto pushes the due date to the far right of the flex container
@@ -131,7 +132,7 @@
       const payload = {
         users_id: userId,
         description: taskDescription,
-        completion_date: dueDate
+        completion_date: dueDate ? dueDate : null, // send null if dueDate is blank
       };
 
       fetch('/task', {
@@ -153,7 +154,7 @@
         // Update local tasks array for client-side sorting
         tasks.push({
           description: taskDescription,
-          completion_date: dueDate
+          completion_date: dueDate ? dueDate : null,
         });
         sortTasks();
         renderTasks();
