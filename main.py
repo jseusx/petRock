@@ -425,6 +425,7 @@ def create_account():
     return render_template('create_account.html')
 
 @app.route('/creation')
+@login_required
 def creation():
     return render_template('creation.html')
 
