@@ -45,7 +45,7 @@ class Rock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     rockshape = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
-    rockcolor = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
+    rockeyes = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
     rockmisc = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
     owner = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
@@ -57,8 +57,7 @@ class UserUnlocks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     users_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     unlock_name = db.Column(db.String(50), nullable=False)
-    unlocked_at = db.Column(db.DateTime, server_default=db.func.now())
-
+    
     def __repr__(self):
         return '<UserUnlocks %r>' % self.unlock_name
 
@@ -189,19 +188,32 @@ def shop():
 
 
 @app.route('/rock', methods=['POST'])
+@login_required
 def create_rock():
     if request.is_json:
         data = request.get_json()
+
+        # Validate required fields
+        name = data.get('name')
+        rockshape = data.get('rockshape')
+        rockmisc = data.get('rockmisc')
+        rockeyes = data.get('rockeyes')
+        owner = data.get('owner')
+
+        if not name or not rockshape or not rockmisc or not rockeyes or not owner:
+            return {"error": "Missing required fields"}, 400
+        
+        # Create a new rock object
         rock = Rock(
-            name=data['name'],
-            rockshape=data['rockshape'],
-            rockcolor=data['rockcolor'],
-            rockmisc=data['rockmisc'],
-            owner=data['owner']
+            name=name,
+            rockshape=rockshape,
+            rockeyes=rockeyes,
+            rockmisc=rockmisc,
+            owner=owner
         )
         db.session.add(rock)
         db.session.commit()
-        return {"message": "Rock added successfully"}, 201
+        return {"message": "Rock created successfully"}, 201
     return {"error": "Invalid input"}, 400
 
 @app.route('/rock/<rock_id>', methods=['GET', 'DELETE', 'PUT'])
@@ -211,7 +223,7 @@ def handle_rocks(rock_id):
         return {
             "name": rock.name,
             "rockshape": rock.rockshape,
-            "rockcolor": rock.rockcolor,
+            "rockeyes": rock.rockeyes,
             "rockmisc": rock.rockmisc,
             "owner": rock.owner
         }, 200
@@ -219,7 +231,7 @@ def handle_rocks(rock_id):
         data = request.get_json()
         rock.name = data['name']
         rock.rockshape = data['rockshape']
-        rock.rockcolor = data['rockcolor']
+        rock.rockeyes = data['rockeyes']
         rock.rockmisc = data['rockmisc']
         db.session.commit()
         return {"message": f"Rock {rock.name} successfully updated"}
@@ -266,7 +278,7 @@ def handle_user(users_id):
         return {"message": f"User {user.username} successfully deleted."}
 
 # takes as input, a user id and an item type (eye, shape, misc) and returns a json object with all the items of that type that the user has unlocked
-@app.route('/user/<user_id>/unlocks/<string:item_type>', methods=['GET'])
+'''@app.route('/user/<user_id>/unlocks/<string:item_type>', methods=['GET'])
 def get_user_unlocked(user_id, item_type):
     user = User.query.get_or_404(user_id)
     unlocked_items = (
@@ -286,7 +298,26 @@ def get_user_unlocked(user_id, item_type):
                    'user_id': user.id,
                    'item_type': item_type,
                    'unlocked_items': item_list}
+    )'''
+
+@app.route('/user/<int:user_id>/unlocks', methods=['GET'])
+def get_all_unlocks(user_id):
+    user = User.query.get_or_404(user_id) # check to see if user exists first
+    # select all items, compare them to items unlocked, and compare items unlocked to current user
+    unlocked_items = (
+        db.session.query(Item)
+        .join(UserUnlocks, Item.item_path == UserUnlocks.unlock_name)
+        .filter(UserUnlocks.user_id == user_id)
+        .all()
     )
+    # returns JSON object with user ID and all items that user has unlocked
+    return jsonify({
+        'user_id': user_id,
+        'unlocked_items': [
+            {'item_type': item.item_type, 'item_path': item.item_path}
+            for item in unlocked_items
+        ]
+    })
 
 @app.route('/item', methods=['POST'])
 def create_item():
@@ -438,7 +469,7 @@ def create_account():
 @app.route('/creation')
 @login_required
 def creation():
-    return render_template('creation.html')
+    return render_template('creation.html', user_id=current_user.id)
 
 @app.route('/todo')
 @login_required
