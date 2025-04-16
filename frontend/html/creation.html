@@ -8,6 +8,56 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <title>PetRock</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 5%;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo img {
+            width: 36px;
+            margin-right: 10px;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        nav ul li {
+            margin-left: 24px;
+        }
+        nav ul li a:hover {
+            color: #0084ff;
+        }
         .left-panel {
             border:pink solid 4px;
             position: absolute;
@@ -68,7 +118,7 @@
             background-color: #e0e0e0;
             border: 2px solid #ccc;
             border-radius: 10px;
-            overflow: hidden;   
+            overflow: hidden;
         }
         .customization-area img {
             position: absolute;
@@ -96,10 +146,10 @@
         }
     </style>
     <script>
-        const selected = { 
-            shape: 'rockShape1.png', 
-            misc: 'rockMisc1.png', 
-            eye: 'rockEyes1.png' 
+        const selected = {
+            shape: 'rockShape1.png',
+            misc: 'rockMisc1.png',
+            eye: 'rockEyes1.png'
         };
         const rockBucks = 20;
         const userId = 1; // TODO: replace with actual user ID
@@ -129,7 +179,7 @@
                 categories[item.item_type].id = item.item_type;
                 document.querySelector('.left-panel').appendChild(categories[item.item_type]);
               }
-      
+
               const img = document.createElement('img');
               img.src = `src/${item.item_path}`;
               img.alt = item.item_type;
@@ -137,7 +187,7 @@
               categories[item.item_type].appendChild(img);
             });
           }
-        
+
 
         // apply image to the customization area
         function applyImage(imgSrc, layer) {
@@ -189,45 +239,48 @@
     </script>
 </head>
 <body>
-    <!--navbar navbar-->
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="index.html">
-                    <img src="/src/rockpet.png" alt="Pet" style="height: 40px; display: inline-block; margin-right: 10px;">
-                    <strong>PetRock</strong>
-                </a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="#">Community</a></li>
-                <li><a href="shop.html">Store</a></li>
-                <li><a href="login.html">Login</a></li>
+    <header>
+        <a href="index.html" class="logo">
+            <img src="/static/src/rockpet.png" alt="PetRock Logo">
+            <span>PetRock</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('creation') }}">Create a Rock</a></li>
+                <li><a href="{{ url_for('shop') }}">Store</a></li>
+                <li>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('logout') }}" class="sign-in">Log out</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="sign-in">Sign In</a>
+                    {% endif %}
+                </li>
             </ul>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <div class="left-panel">
         <div class="button-grid">
-            <button onclick="showMenu('rockShape')"><img src="/src/rockShape.png" alt="Rock Shape"></button>
-            <button onclick="showMenu('rockEyes')"><img src="/src/rockEyes.png" alt="Rock Eyes"></button>
-            <button onclick="showMenu('rockMisc')"><img src="/src/rockMisc.png" alt="Rock Miscellaneous"></button>
+            <button onclick="showMenu('rockShape')"><img src="/static/src/rockShape.png" alt="Rock Shape"></button>
+            <button onclick="showMenu('rockEyes')"><img src="/static/src/rockEyes.png" alt="Rock Eyes"></button>
+            <button onclick="showMenu('rockMisc')"><img src="/static/src/rockMisc.png" alt="Rock Miscellaneous"></button>
         </div>
 
         <div id="rockShape" class="menu">
-            <img src="src/rockShape1.png" alt="Shape 1" onclick="changeAppearance(1, 'rockShape')">
-            <img src="src/rockShape2.png" alt="Shape 2" onclick="changeAppearance(2, 'rockShape')">
-            <img src="src/rockShape3.png" alt="Shape 3" onclick="changeAppearance(3, 'rockShape')">
+            <img src="/static/src/rockShape1.png" alt="Shape 1" onclick="changeAppearance(1, 'rockShape')">
+            <img src="/static/src/rockShape2.png" alt="Shape 2" onclick="changeAppearance(2, 'rockShape')">
+            <img src="/static/src/rockShape3.png" alt="Shape 3" onclick="changeAppearance(3, 'rockShape')">
         </div>
 
         <div id="rockMisc" class="menu">
-            <img src="src/rockMisc1.png" alt="Misc 1" onclick="changeAppearance(1, 'rockMisc')">
-            <img src="src/rockMisc2.png" alt="Misc 2" onclick="changeAppearance(2, 'rockMisc')">
+            <img src="/static/src/rockMisc1.png" alt="Misc 1" onclick="changeAppearance(1, 'rockMisc')">
+            <img src="/static/src/rockMisc2.png" alt="Misc 2" onclick="changeAppearance(2, 'rockMisc')">
         </div>
     </div>
 
     <div style="display: flex; align-items: center; margin-top: 20px; padding-left: 20px;">
-        <img src="src/rockbux.png" alt="rockBux" style="width: 80px; height: 80px; margin-right: 10px;"> <!-- Replace with the actual path to your image -->
+        <img src="/static/src/rockBux.png" alt="rockBux" style="width: 80px; height: 80px; margin-right: 10px;"> <!-- Replace with the actual path to your image -->
         <p style="font-size: 5.0rem; margin: 0;">20</p>
     </div>
 
