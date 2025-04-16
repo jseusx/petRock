@@ -71,27 +71,28 @@ class Item(db.Model):
 
 @app.route('/')
 def index():
-    db.drop_all()
     db.create_all()
-    hashed_password = generate_password_hash('1234', method='pbkdf2:sha256')
-    brady = User(username='Brady', password_hash=hashed_password)
-
+    if not User.query.filter_by(username='Brady').first():
+        hashed_password = generate_password_hash('1234', method='pbkdf2:sha256')
+        brady = User(username='Brady', password_hash=hashed_password)
+        db.session.add(brady)
     # Creating items to add to database
-    items = [
-        {"id": 101 ,"item_type": "eye" ,"item_path": "googlyeyes.png", "price": 25},
-        {"id": 102,"item_type": "eye" ,"item_path": "girlface.png" , "price": 20},
-        {"id": 103,"item_type": "eye" ,"item_path": "eyelash.png" , "price": 20},
-        {"id": 104,"item_type": "eye","item_path": "angryeyes.png" , "price": 15},
-        {"id": 105,"item_type": "eye" ,"item_path": "tiredeyes.png" , "price": 15},
-        {"id": 201,"item_type": "shape" ,"item_path": "rockshape1.jpg" , "price": 35},
-        {"id": 202,"item_type": "shape","item_path": "blackrock.png", "price": 25},
-        {"id": 203,"item_type": "shape" ,"item_path": "rockshape2.png", "price": 40},
-        {"id":204,"item_type": "shape" ,"item_path": "rockshape3.png" , "price": 35},
-        {"id": 301,"item_type": "misc","item_path": "catears.png", "price": 30},
-        {"id": 302,"item_type": "misc","item_path": "wizardhat.png", "price": 40},
-        {"id": 303,"item_type": "misc","item_path": "piratehat.png" , "price": 50},
-        {"id": 304,"item_type": "misc" ,"item_path": "crown.png", "price": 75},
-    ]
+    if not Item.query.first():
+        items = [
+            {"item_type": "eye", "item_path": "googlyeyes.png", "price": 25},
+            {"item_type": "eye", "item_path": "girlface.png", "price": 20},
+            {"item_type": "eye", "item_path": "eyelash.png", "price": 20},
+            {"item_type": "eye", "item_path": "angryeyes.png", "price": 15},
+            {"item_type": "eye", "item_path": "tiredeyes.png", "price": 15},
+            {"item_type": "shape", "item_path": "rockshape1.jpg", "price": 35},
+            {"item_type": "shape", "item_path": "blackrock.png", "price": 25},
+            {"item_type": "shape", "item_path": "rockshape2.png", "price": 40},
+            {"item_type": "shape", "item_path": "rockshape3.png", "price": 35},
+            {"item_type": "misc", "item_path": "catears.png", "price": 30},
+            {"item_type": "misc", "item_path": "wizardhat.png", "price": 40},
+            {"item_type": "misc", "item_path": "piratehat.png", "price": 50},
+            {"item_type": "misc", "item_path": "crown.png", "price": 75},
+        ]
 
     for item_data in items:
         item = Item(
@@ -100,7 +101,6 @@ def index():
             price = item_data["price"]
         )
         db.session.add(item)
-    db.session.add(brady)
     db.session.commit()
     print(User.query.all())
     return render_template('index.html', log_html=User.query.all())
@@ -184,6 +184,9 @@ def handle_rocks(rock_id):
 def create_user():
     if request.is_json:
         data = request.get_json()
+        # check for duplicate usernames
+        if User.query.filter_by(username=data['username']).first():
+            return {"error": "Username already exists"}, 400
         user = User(
             username=data['username'],
             password_hash=hashed_password

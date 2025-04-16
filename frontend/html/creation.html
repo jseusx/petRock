@@ -96,48 +96,50 @@
         }
     </style>
     <script>
-        //show rock 1 menu on load
+        let rockShape = "rockShape1.png";
+        let rockEyes = "rockEyes1.png";
+        let rockMisc = "rockMisc1.png";
+        const rockBucks = 20;
+        const userId = 1; // TODO: replace with actual user ID
+        const menuParts = {
+            shapeMenu: "shape",
+            eyesMenu: "eyes",
+            miscMenu: "misc"
+        };
+        // fetch data for unlocked objects of user, and populates each menu according to category
+        // additionally displays menu 1 by default
+        
         window.onload = function() {
+            for (const [menuId, itemType] of Object.entries(parts)) {
+                fetch(`/user/${userId}/unlocks/${itemType}`)
+                    .then(response => response.json())
+                    .then(data => populateMenu(menuId, data.unlocked_items))
+                    .catch(err => console.error('Error loading items:', err));
+            }
             showMenu('rockColor');
         };
-        let rockColor = null;
-        let rockShape = null;
-        let rockEyes = null;
-        let rockMisc = null;
-        let rockSize = null;
-        const rockBucks = 20;
+
+        function populateMenu(menuId, items) {
+            const menu = document.getElementById(menuId);
+            menu.innerHTML = ''; // clear old items
+            items.forEach((item, index) => {
+                const img = document.createElement('img');
+                img.src = `src/${item.item_path}`;
+                img.alt = item.item_type + ' ' + index;
+                img.onclick = () => changeAppearance(`src/${item.item_path}`, menuId);
+                menu.appendChild(img);
+            });
+            menu.style.display = 'grid';
+        }
         // show clicked menu, hide other menus
         function showMenu(menuId) {
             document.querySelectorAll('.menu').forEach(menu => menu.style.display = 'none');
             document.getElementById(menuId).style.display = 'block';
         }
+
         // change rock part appearance
-        // index is number of the image clicked, rockPart is the part of the rock being changed
-        function changeAppearance(index, rockPart) {
-            console.log(`Changing appearance of ${rockPart} to index ${index}`);
-            const imgSrc = `src/${rockPart}${index}.png`;
-
-            switch (rockPart) {
-                case 'rockColor':
-                    rockColor = index;
-                    break;
-                case 'rockShape':
-                    rockShape = index;
-                    break;
-                case 'rockEyes':
-                    rockEyes = index;
-                    break;
-                case 'rockMisc':
-                    rockMisc = index;
-                    break;
-                case 'rockSize':
-                    rockSize = index;
-                    break;
-
-            }
-            
+        function changeAppearance(imgSrc, rockPart) {
             applyImage(imgSrc, rockPart);
-
         }
 
         // apply image to the customization area
@@ -154,6 +156,16 @@
 
             imgElement.src = imgSrc;
 
+        }
+
+        
+        function resetCustomization() {
+            rockShape = "rockShape1.png";
+            rockEyes = "rockEyes1.png";
+            rockMisc = "rockMisc1.png";
+
+            const customizationArea = document.querySelector('.customization-area');
+            customizationArea.innerHTML = '';
         }
     </script>
 </head>
@@ -178,11 +190,9 @@
 
     <div class="left-panel">
         <div class="button-grid">
-            <button onclick="showMenu('rockColor')"><img src="/src/rockColor.png" alt="Rock Color"></button>
             <button onclick="showMenu('rockShape')"><img src="/src/rockShape.png" alt="Rock Shape"></button>
             <button onclick="showMenu('rockEyes')"><img src="/src/rockEyes.png" alt="Rock Eyes"></button>
             <button onclick="showMenu('rockMisc')"><img src="/src/rockMisc.png" alt="Rock Miscellaneous"></button>
-            <button onclick="showMenu('rockSize')"><img src="/src/rockSize.png" alt="Rock Size"></button>
         </div>
 
         <div id="rockShape" class="menu">
