@@ -1,43 +1,45 @@
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
     // Get the modal
-var modal = document.getElementById("purchaseModal");
+    var modal = document.getElementById("purchaseModal");
+    var modalText = document.getElementById("modalText");
+    var cancelButton = document.getElementById("cancelButton");
+    var confirmButton = document.getElementById("confirmButton");
+    var totalMoneyElement = document.getElementById("totalMoney");
+    var totalMoney = parseInt(totalMoneyElement.textContent);
+    var currentItem = null;
 
-var totalMoneyElement = document.getElementById("totalMoney");
-var totalMoney = parseInt(totalMoneyElement.textContent);
+    // Handle Buy button clicks
+    var buyButtons = document.querySelectorAll(".buy-button");
+    buyButtons.forEach(function (button) {
+        button.onclick = function () {
+            var itemName = button.getAttribute("data-item-name");
+            var itemPrice = parseInt(button.getAttribute("data-item-price"));
+            var itemId = button.getAttribute("data-item-id");
 
-// NOTE: also have to change to prevent duplicate purchases
-var images = document.querySelectorAll(".carousel-img");
-images.forEach(function(img){
-    img.onclick = function(){
-        var priceElement = img.parentElement.querySelector(".price-value");
-        var price = parseInt(priceElement.textContent);
-        var itemId = img.getAttribute("data-item-id")
-    
-        modal.style.display = "block";
-        var modalText = document.getElementById("modalText")
-        // NOTE change name of currency once determined
-        modalText.innerHTML = `Confirm Purchase of item for ${price} Rockbux?`
+            currentItem = { id: itemId, name: itemName, price: itemPrice };
 
-        //check if you're not a brokie b4 purchase
-        var confirmButton =document.getElementById("confirmButton");
-        confirmButton.onclick = function() {
-            if (totalMoney >= price) {
-                //send POST request to /shop/unlock route
-                fetch('/shop/unlock', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ item_id: itemId })
-                })
+            modalText.innerHTML = `Confirm Purchase of ${itemName} for ${itemPrice} Rockbux?`;
+            modal.style.display = "block";
+        };
+    });
+
+    // Confirm button functionality
+    confirmButton.onclick = function () {
+        if (currentItem && totalMoney >= currentItem.price) {
+            // Send POST request to /shop/unlock route
+            fetch('/shop/unlock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ item_id: currentItem.id })
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.message) {
                         totalMoney = data.new_balance;
                         totalMoneyElement.textContent = totalMoney;
                         modalText.innerHTML = "Purchase confirmed!";
-
-                        // Reload the page after 1 second to reflect changes
                         setTimeout(function () {
                             location.reload();
                         }, 1000);
@@ -50,32 +52,23 @@ images.forEach(function(img){
                     modalText.innerHTML = "An error occurred.";
                 });
 
-            // Modal auto closes 2 seconds after confirmation or failed purchase
-            setTimeout(function (){
+            setTimeout(function () {
                 modal.style.display = "none";
             }, 2000);
+        } else {
+            modalText.innerHTML = "You can't afford this!";
+        }
+    };
 
+    // Cancel button functionality
+    cancelButton.onclick = function () {
+        modal.style.display = "none";
+    };
 
-
-            } else {
-                modalText.innerHTML = "You can't afford this!"
-            }     
-        }; 
-    };  
+    // Close modal when clicking outside
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
 });
-
-
-//cancel button
-cancelButton.onclick = function () {
-    modal.style.display = "none";
-};
-
-
-
-window.onclick = function (event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-};
-})
-
