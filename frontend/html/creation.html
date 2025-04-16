@@ -96,9 +96,11 @@
         }
     </style>
     <script>
-        let rockShape = "rockShape1.png";
-        let rockEyes = "rockEyes1.png";
-        let rockMisc = "rockMisc1.png";
+        const selected = { 
+            shape: 'rockShape1.png', 
+            misc: 'rockMisc1.png', 
+            eye: 'rockEyes1.png' 
+        };
         const rockBucks = 20;
         const userId = 1; // TODO: replace with actual user ID
         const menuParts = {
@@ -108,39 +110,34 @@
         };
         // fetch data for unlocked objects of user, and populates each menu according to category
         // additionally displays menu 1 by default
-        
-        window.onload = function() {
-            for (const [menuId, itemType] of Object.entries(parts)) {
-                fetch(`/user/${userId}/unlocks/${itemType}`)
-                    .then(response => response.json())
-                    .then(data => populateMenu(menuId, data.unlocked_items))
-                    .catch(err => console.error('Error loading items:', err));
-            }
-            showMenu('rockColor');
-        };
-
-        function populateMenu(menuId, items) {
-            const menu = document.getElementById(menuId);
-            menu.innerHTML = ''; // clear old items
-            items.forEach((item, index) => {
-                const img = document.createElement('img');
-                img.src = `src/${item.item_path}`;
-                img.alt = item.item_type + ' ' + index;
-                img.onclick = () => changeAppearance(`src/${item.item_path}`, menuId);
-                menu.appendChild(img);
+        window.onload = () => {
+            fetch(`/user/${userId}/unlocks/all`)
+              .then(res => res.json())
+              .then(data => populateMenus(data.unlocked_items))
+              .catch(console.error);
+          };
+        // TODO: GET THIS SHIT TO WORK!!!!!!
+        // Want to try to get this to populate menus according to each item category on page load
+        // May have to abandon this approach but it is what it is. I still have to update HTML
+        // to support this functionality and actually test it
+        function populateMenus(items) {
+            const categories = {};
+            items.forEach(item => {
+              if (!categories[item.item_type]) {
+                categories[item.item_type] = document.createElement('div');
+                categories[item.item_type].className = 'menu';
+                categories[item.item_type].id = item.item_type;
+                document.querySelector('.left-panel').appendChild(categories[item.item_type]);
+              }
+      
+              const img = document.createElement('img');
+              img.src = `src/${item.item_path}`;
+              img.alt = item.item_type;
+              img.onclick = () => applyImage(img.src, layers[item.item_type], item);
+              categories[item.item_type].appendChild(img);
             });
-            menu.style.display = 'grid';
-        }
-        // show clicked menu, hide other menus
-        function showMenu(menuId) {
-            document.querySelectorAll('.menu').forEach(menu => menu.style.display = 'none');
-            document.getElementById(menuId).style.display = 'block';
-        }
-
-        // change rock part appearance
-        function changeAppearance(imgSrc, rockPart) {
-            applyImage(imgSrc, rockPart);
-        }
+          }
+        
 
         // apply image to the customization area
         function applyImage(imgSrc, layer) {
@@ -158,8 +155,8 @@
 
         }
 
-        
-        function resetCustomization() {
+        //reset customization to default
+        function resetRock() {
             rockShape = "rockShape1.png";
             rockEyes = "rockEyes1.png";
             rockMisc = "rockMisc1.png";
@@ -167,6 +164,28 @@
             const customizationArea = document.querySelector('.customization-area');
             customizationArea.innerHTML = '';
         }
+        /** gets name from input box and gets selected options, and creates a rock object
+        to send to backend and upload to db*/
+        function submitRock() {
+            const name = document.querySelector("input[name='name']").value;
+            if (!name || !selected.shape || !selected.eye || !selected.misc) {
+              alert("Yo, give me a name and some cool stuff dawg");
+              return;
+            }
+            fetch('/rock', {
+              method: 'POST',
+              body: JSON.stringify({
+                name: name,
+                rockshape: selected.shape.item_path,
+                rockmisc: selected.misc.item_path,
+                rockeyes: selected.eye.item_path,
+                owner: userId
+              })
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message))
+            .catch(console.error);
+          }
     </script>
 </head>
 <body>
@@ -222,8 +241,8 @@
             <input type="text" name="name" placeholder="Enter your pet's name" required style="width: 300px; padding: 10px; font-size: 1.2rem; border-radius: 5px; border: 1px solid #ccc;">
             <div class="customization-area"></div>
             <br>
-            <button type="submit" class="btn btn-primary" style="font-size: 1.2rem;">Create Pet</button>
-            <button type="button" class="btn btn-secondary" style="font-size: 1.2rem; margin-left: 10px;">Restart</button>
+            <button type="submit" class="btn btn-primary" style="font-size: 1.2rem;" onclick="submitRock()">Create Pet</button>
+            <button type="button" class="btn btn-secondary" style="font-size: 1.2rem; margin-left: 10px;" onclick ="resetRock()">Restart</button>
         </form>
     </div>
 </body>

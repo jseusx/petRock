@@ -216,27 +216,24 @@ def handle_user(user_id):
         return {"message": f"User {user.username} successfully deleted."}
     
 # takes as input, a user id and an item type (eye, shape, misc) and returns a json object with all the items of that type that the user has unlocked
-@app.route('/user/<user_id>/unlocks/<string:item_type>', methods=['GET'])
-def get_user_unlocked(user_id, item_type):
-    user = User.query.get_or_404(user_id)
+@app.route('/user/<int:user_id>/unlocks', methods=['GET'])
+def get_all_unlocks(user_id):
+    user = User.query.get_or_404(user_id) # check to see if user exists first
+    # select all items, compare them to items unlocked, and compare items unlocked to current user
     unlocked_items = (
-        db.session.query(Item).join(UserUnlocks,Item.id == UserUnlocks.item_id)
-        .filter(UserUnlocks.user_id == user.id, Item.item_type == item_type).all()
+        db.session.query(Item)
+        .join(UserUnlocks, Item.id == UserUnlocks.item_id)
+        .filter(UserUnlocks.user_id == user_id)
+        .all()
     )
-    item_list = [
-        {
-            'id':item.id,
-            'item_type': item.item_type,
-            'item_path': item.item_path,
-            'price': item.price
-        }
-        for item in unlocked_items
-    ]
+    # returns JSON object with user ID and all items that user has unlocked
     return jsonify({
-                   'user_id': user.id,
-                   'item_type': item_type,
-                   'unlocked_items': item_list}
-    )
+        'user_id': user_id,
+        'unlocked_items': [
+            {'item_type': item.item_type, 'item_path': item.item_path}
+            for item in unlocked_items
+        ]
+    })
 # put an item in the database if we need
 @app.route('/item', methods=['POST'])
 def create_item():
@@ -271,7 +268,7 @@ def handle_items(item_id):
     if request.method == 'DELETE':
         db.session.delete(item)
         db.session.commit()
-        return {"message": f"Item {item.item_path} successfully deleted."}
+        return {"message": f"{item.item_path} successfully deleted."}
 # adding a new task to the database
 @app.route('/task', methods=['POST'])
 def create_task():
@@ -302,7 +299,7 @@ def handle_task(task_id):
         task.description = data['description']
         task.completion_date = data['completion_date']
         db.session.commit()
-        return {"message": f"Task {task.description} successfully updated"}
+        return {"message": f"task {task.description} successfully updated"}
     if request.method == 'DELETE':
         db.session.delete(task)
         db.session.commit()
