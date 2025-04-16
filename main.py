@@ -387,6 +387,14 @@ def handle_task(task_id):
     if request.method == 'DELETE':
         if not task:
             return {"error": "Task not found"}, 404
+        
+        # Increment user's balance by 10
+        user = User.query.get(task.users_id)
+        if user:
+            user.balance += 10
+            db.session.commit()
+
+        # Delete the task
         db.session.delete(task)
         db.session.commit()
         return {"message": f"Task {task_id} deleted successfully"}, 200
@@ -480,7 +488,7 @@ def todo():
         "description": task.description, 
         "completion_date": task.completion_date} for task in user_tasks]
 
-    return render_template('todo.html', users_id=current_user.id, tasks=tasks_list)
+    return render_template('todo.html', users_id=current_user.id, tasks=tasks_list, user_balance = current_user.balance)
     #return render_template('todo.html', users_id=current_user.id, tasks=json.dumps(tasks_data))
     
 if __name__ == "__main__":
