@@ -96,49 +96,48 @@
         }
     </style>
     <script>
-        //show rock 1 menu on load
-        window.onload = function() {
-            showMenu('rockColor');
+        const selected = { 
+            shape: 'rockShape1.png', 
+            misc: 'rockMisc1.png', 
+            eye: 'rockEyes1.png' 
         };
-        let rockColor = null;
-        let rockShape = null;
-        let rockEyes = null;
-        let rockMisc = null;
-        let rockSize = null;
         const rockBucks = 20;
-        // show clicked menu, hide other menus
-        function showMenu(menuId) {
-            document.querySelectorAll('.menu').forEach(menu => menu.style.display = 'none');
-            document.getElementById(menuId).style.display = 'block';
-        }
-        // change rock part appearance
-        // index is number of the image clicked, rockPart is the part of the rock being changed
-        function changeAppearance(index, rockPart) {
-            console.log(`Changing appearance of ${rockPart} to index ${index}`);
-            const imgSrc = `src/${rockPart}${index}.png`;
-
-            switch (rockPart) {
-                case 'rockColor':
-                    rockColor = index;
-                    break;
-                case 'rockShape':
-                    rockShape = index;
-                    break;
-                case 'rockEyes':
-                    rockEyes = index;
-                    break;
-                case 'rockMisc':
-                    rockMisc = index;
-                    break;
-                case 'rockSize':
-                    rockSize = index;
-                    break;
-
-            }
-            
-            applyImage(imgSrc, rockPart);
-
-        }
+        const userId = 1; // TODO: replace with actual user ID
+        const menuParts = {
+            shapeMenu: "shape",
+            eyesMenu: "eyes",
+            miscMenu: "misc"
+        };
+        // fetch data for unlocked objects of user, and populates each menu according to category
+        // additionally displays menu 1 by default
+        window.onload = () => {
+            fetch(`/user/${userId}/unlocks/all`)
+              .then(res => res.json())
+              .then(data => populateMenus(data.unlocked_items))
+              .catch(console.error);
+          };
+        // TODO: GET THIS SHIT TO WORK!!!!!!
+        // Want to try to get this to populate menus according to each item category on page load
+        // May have to abandon this approach but it is what it is. I still have to update HTML
+        // to support this functionality and actually test it
+        function populateMenus(items) {
+            const categories = {};
+            items.forEach(item => {
+              if (!categories[item.item_type]) {
+                categories[item.item_type] = document.createElement('div');
+                categories[item.item_type].className = 'menu';
+                categories[item.item_type].id = item.item_type;
+                document.querySelector('.left-panel').appendChild(categories[item.item_type]);
+              }
+      
+              const img = document.createElement('img');
+              img.src = `src/${item.item_path}`;
+              img.alt = item.item_type;
+              img.onclick = () => applyImage(img.src, layers[item.item_type], item);
+              categories[item.item_type].appendChild(img);
+            });
+          }
+        
 
         // apply image to the customization area
         function applyImage(imgSrc, layer) {
@@ -155,6 +154,38 @@
             imgElement.src = imgSrc;
 
         }
+
+        //reset customization to default
+        function resetRock() {
+            rockShape = "rockShape1.png";
+            rockEyes = "rockEyes1.png";
+            rockMisc = "rockMisc1.png";
+
+            const customizationArea = document.querySelector('.customization-area');
+            customizationArea.innerHTML = '';
+        }
+        /** gets name from input box and gets selected options, and creates a rock object
+        to send to backend and upload to db*/
+        function submitRock() {
+            const name = document.querySelector("input[name='name']").value;
+            if (!name || !selected.shape || !selected.eye || !selected.misc) {
+              alert("Yo, give me a name and some cool stuff dawg");
+              return;
+            }
+            fetch('/rock', {
+              method: 'POST',
+              body: JSON.stringify({
+                name: name,
+                rockshape: selected.shape.item_path,
+                rockmisc: selected.misc.item_path,
+                rockeyes: selected.eye.item_path,
+                owner: userId
+              })
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message))
+            .catch(console.error);
+          }
     </script>
 </head>
 <body>
@@ -178,11 +209,9 @@
 
     <div class="left-panel">
         <div class="button-grid">
-            <button onclick="showMenu('rockColor')"><img src="/src/rockColor.png" alt="Rock Color"></button>
             <button onclick="showMenu('rockShape')"><img src="/src/rockShape.png" alt="Rock Shape"></button>
             <button onclick="showMenu('rockEyes')"><img src="/src/rockEyes.png" alt="Rock Eyes"></button>
             <button onclick="showMenu('rockMisc')"><img src="/src/rockMisc.png" alt="Rock Miscellaneous"></button>
-            <button onclick="showMenu('rockSize')"><img src="/src/rockSize.png" alt="Rock Size"></button>
         </div>
 
         <div id="rockShape" class="menu">
@@ -212,8 +241,8 @@
             <input type="text" name="name" placeholder="Enter your pet's name" required style="width: 300px; padding: 10px; font-size: 1.2rem; border-radius: 5px; border: 1px solid #ccc;">
             <div class="customization-area"></div>
             <br>
-            <button type="submit" class="btn btn-primary" style="font-size: 1.2rem;">Create Pet</button>
-            <button type="button" class="btn btn-secondary" style="font-size: 1.2rem; margin-left: 10px;">Restart</button>
+            <button type="submit" class="btn btn-primary" style="font-size: 1.2rem;" onclick="submitRock()">Create Pet</button>
+            <button type="button" class="btn btn-secondary" style="font-size: 1.2rem; margin-left: 10px;" onclick ="resetRock()">Restart</button>
         </form>
     </div>
 </body>
