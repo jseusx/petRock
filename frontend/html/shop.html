@@ -41,6 +41,12 @@
             padding-top: 20px;
         }
         
+        .purchased  {
+            opacity: 0.25;
+            /* makes it so purchased items not clickable */
+            pointer-events: none;
+        }
+
     </style>
 </head>
 
@@ -98,7 +104,8 @@
                                     <div class="col-md-4 mb-3">
                                         <div class="card">
                                             <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="{{ item.item_type }}" 
+                                                <img class="img-fluid carousel-img {% if item.item_path in purchased_item_paths %}purchased{% endif %}"  
+                                                alt="{{ item.item_type }}" 
                                                 src="/static/src/{{ item.item_path }}"
                                                 data-item-id="{{ item.id }}">
                                                 <img src="/static/src/moneyicon.png" class="priceimg">

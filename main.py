@@ -150,6 +150,11 @@ def unlock_item():
     user = current_user
 
     item = Item.query.get(item_id)
+
+    #check if user alr bought item
+    existing_unlock = UserUnlocks.query.filter_by(users_id=user.id, unlock_name=item.item_path).first()
+    if existing_unlock:
+        return {"error": "Item already purchased"}, 400   
     
     if user.balance >= item.price:
         user.balance -= item.price
@@ -170,12 +175,16 @@ def shop():
 
     items = Item.query.all()
 
+    #query items alr bought
+    purchased_items = UserUnlocks.query.filter_by(users_id=current_user.id).all()
+    purchased_item_paths = [unlock.unlock_name for unlock in purchased_items]
+
     #match item with their type
     grouped_items = defaultdict(list)
     for item in items:
         grouped_items[item.item_type].append(item)
 
-    return render_template('shop.html', grouped_items=grouped_items, user_balance = current_user.balance)
+    return render_template('shop.html', grouped_items=grouped_items, user_balance = current_user.balance, purchased_item_paths=purchased_item_paths)
 
 
 

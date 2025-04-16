@@ -36,6 +36,11 @@ images.forEach(function(img){
                         totalMoney = data.new_balance;
                         totalMoneyElement.textContent = totalMoney;
                         modalText.innerHTML = "Purchase confirmed!";
+
+                        // Reload the page after 1 second to reflect changes
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
                     } else {
                         modalText.innerHTML = data.error || "An error occurred.";
                     }
