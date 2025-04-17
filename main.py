@@ -45,9 +45,9 @@ class Rock(db.Model):
     __tablename__ = 'rock'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    rockshape = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
-    rockcolor = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
-    rockmisc = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
+    rockshape = db.Column(db.String(50),  nullable=False)
+    rockeyes = db.Column(db.String(50),  nullable=False)
+    rockmisc = db.Column(db.String(50),  nullable=False)
     owner = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):
@@ -93,19 +93,22 @@ def initialize_database():
 
         # Creating items to add to database
         items = [
-            {"id": 101 ,"item_type": "eye" ,"item_path": "googlyeyes.png", "price": 25},
-            {"id": 102,"item_type": "eye" ,"item_path": "girlface.png" , "price": 20},
-            {"id": 103,"item_type": "eye" ,"item_path": "eyelash.png" , "price": 20},
-            {"id": 104,"item_type": "eye","item_path": "angryeyes.png" , "price": 15},
-            {"id": 105,"item_type": "eye" ,"item_path": "tiredeyes.png" , "price": 15},
-            {"id": 201,"item_type": "shape" ,"item_path": "rockshape1.jpg" , "price": 35},
-            {"id": 202,"item_type": "shape","item_path": "blackrock.png", "price": 25},
-            {"id": 203,"item_type": "shape" ,"item_path": "rockshape2.png", "price": 40},
-            {"id":204,"item_type": "shape" ,"item_path": "rockshape3.png" , "price": 35},
-            {"id": 301,"item_type": "misc","item_path": "catears.png", "price": 30},
-            {"id": 302,"item_type": "misc","item_path": "wizardhat.png", "price": 40},
-            {"id": 303,"item_type": "misc","item_path": "piratehat.png" , "price": 50},
-            {"id": 304,"item_type": "misc" ,"item_path": "crown.png", "price": 75},
+            {"id": 101 ,"item_type": "eye" ,"item_path": "/static/src/googlyeyes.png", "price": 25},
+            {"id": 102,"item_type": "eye" ,"item_path": "/static/src/girlface.png" , "price": 20},
+            {"id": 103,"item_type": "eye" ,"item_path": "/static/src/eyelash.png" , "price": 20},
+            {"id": 104,"item_type": "eye","item_path": "/static/src/angryeyes.png" , "price": 15},
+            {"id": 105,"item_type": "eye" ,"item_path": "/static/src/tiredeyes.png" , "price": 15},
+            {"id": 201,"item_type": "shape" ,"item_path": "/static/src/rockshape1.jpg" , "price": 35},
+            {"id": 202,"item_type": "shape","item_path": "/static/src/blackrock.png", "price": 25},
+            {"id": 203,"item_type": "shape" ,"item_path": "/static/src/rockshape2.png", "price": 40},
+            {"id":204,"item_type": "shape" ,"item_path": "/static/src/rockshape3.png" , "price": 35},
+            {"id": 205, "item_type": "shape", "item_path": "/static/src/rockShape1.png", "price": 35},
+            {"id": 301,"item_type": "misc","item_path": "/static/src/catears.png", "price": 30},
+            {"id": 302,"item_type": "misc","item_path": "/static/src/wizardhat.png", "price": 40},
+            {"id": 303,"item_type": "misc","item_path": "/static/src/piratehat.png" , "price": 50},
+            {"id": 304,"item_type": "misc" ,"item_path": "/static/src/crown.png", "price": 75},
+            {"id": 305, "item_type": "misc", "item_path": "/static/src/rockMisc1.png", "price": 75},
+
         ]
 
         for item_data in items:
@@ -203,7 +206,7 @@ def create_rock():
         db.session.add(rock)
         db.session.commit()
         return {"message": "Rock added successfully"}, 201
-    return {"error": "Invalid input"}, 400
+    return {"error": "/rock post fail"}, 400
 
 @app.route('/rock/<rock_id>', methods=['GET', 'DELETE', 'PUT'])
 def handle_rocks(rock_id):
@@ -242,7 +245,7 @@ def create_user():
         db.session.add(user)
         db.session.commit()
         return {"message": "User added successfully"}, 201
-    return {"error": "Invalid input"}, 400
+    return {"error": "/user post fail"}, 400
 
 # have to change this as well so that way password isnt just sent out in response
 @app.route('/user/<users_id>', methods=['GET', 'DELETE', 'PUT'])

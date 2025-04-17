@@ -58,54 +58,54 @@
         nav ul li a:hover {
             color: #0084ff;
         }
-            .button-grid {
-        position: fixed; /* Fix the grid to the left side of the screen */
-        top: 50%;
-        left: 10px; /* Adjust the left position as needed */
-        display: flex;
-        flex-direction: column; /* Align buttons vertically */
-        gap: 10px;
-    }
+        .button-grid {
+            position: fixed;
+            top: 50%;
+            left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-    .button-grid button {
-        width: 60px;
-        height: 60px;
-        border: black solid 2px;
-        background-color: #f8f9fa;
-        cursor: pointer;
-        position: relative;
-    }
+        .button-grid button {
+            width: 60px;
+            height: 60px;
+            border: black solid 2px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            position: relative;
+        }
 
-    .button-grid button img {
-        width: 100%;
-        height: 100%;
-    }
+        .button-grid button img {
+            width: 100%;
+            height: 100%;
+        }
 
-    .menu {
-        position: absolute;
-        top: 47%;
-        left: 70px;
-        display: none;
-        grid-template-columns: 1fr;
-        gap: 10px;
-        padding: 10px;
-        background-color: #f1f1f1;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        z-index: 1000;
-    }
+        .menu {
+            position: absolute;
+            top: 47%;
+            left: 70px;
+            display: none;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            z-index: 1000;
+        }
 
-    .menu img {
-        width: 50px;
-        height: 50px;
-        cursor: pointer;
-        border: #555 solid 1px;
-        margin-top: 5px;
-    }
+        .menu img {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            border: #555 solid 1px;
+            margin-top: 5px;
+        }
 
-    .menu.active {
-        display: grid; /* Show the menu when active */
-    }
+        .menu.active {
+            display: grid;
+        }
         .customization-area {
             position: relative;
             width: 300px;
@@ -163,53 +163,41 @@
         // fetch data for unlocked objects of user, and populates each menu according to category
         // additionally displays menu 1 by default
         window.onload = async function () {
-    try {
-      const response = await fetch('/items');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const itemsData = await response.json();
+            try {
+                const response = await fetch('/items');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const itemsData = await response.json();
 
-      // Store it in a single variable
-      const allItems = itemsData;
-
-      // You can log to see or do something with it
-      console.log('Fetched items:', allItems);
-
-      // Example: use it to populate a dropdown or list
-      // document.getElementById('itemList').innerHTML = allItems.map(item => `<li>${item.name}</li>`).join('');
-
-    } catch (error) {
-      console.error('Error fetching items:', error);
-    }
-  };
+                const allItems = itemsData;
+                console.log('Fetched items:', allItems);
+            } catch (error) {
+            console.error('Error fetching items:', error);
+            }
+        };
         // TODO: GET THIS SHIT TO WORK!!!!!!
         // Want to try to get this to populate menus according to each item category on page load
         // May have to abandon this approach but it is what it is. I still have to update HTML
         // to support this functionality and actually test it
         function populateMenus(items) {
-    const categories = [...new Set(items.map(item => item.category))];
+        const categories = [...new Set(items.map(item => item.category))];
 
-    for (const category of categories) {
-      const menu = document.getElementById(`menu-${category}`);
-      if (!menu) {
-        console.warn(`No menu found for category: ${category}`);
-        continue;
-      }
-      menu.innerHTML = '';
-      const categoryItems = items.filter(item => item.category === category);
-      for (const item of categoryItems) {
-        const button = document.createElement('button');
-        button.classList.add('item-button');
-        const img = document.createElement('img');
-        img.src = item.image_path;
-        img.alt = item.name;
-        img.classList.add('item-image');
-        button.appendChild(img);
-        menu.appendChild(button);
-      }
-    }
-  }
+        for (const category of categories) {
+            menu.innerHTML = '';
+            const categoryItems = items.filter(item => item.category === category);
+            for (const item of categoryItems) {
+                const button = document.createElement('button');
+                button.classList.add('item-button');
+                const img = document.createElement('img');
+                img.src = item.image_path;
+                img.alt = item.name;
+                img.classList.add('item-image');
+                button.appendChild(img);
+                menu.appendChild(button);
+            }
+        }
+        }
 
 
         // apply image to the customization area
@@ -225,18 +213,16 @@
             }
 
             imgElement.src = imgSrc;
-
+            if (layer === 'rock-shape') {
+              selected.shape = imgSrc;
+            } else if (layer === 'rock-eyes') {
+                selected.eye = imgSrc;
+            } else if (layer === 'rock-misc') {
+                selected.misc = imgSrc;
+            }
         }
 
-        //reset customization to default
-        function resetRock() {
-            rockShape = "rockShape1.png";
-            rockEyes = "rockEyes1.png";
-            rockMisc = "rockMisc1.png";
 
-            const customizationArea = document.querySelector('.customization-area');
-            customizationArea.innerHTML = '';
-        }
         /** gets name from input box and gets selected options, and creates a rock object
         to send to backend and upload to db*/
         function submitRock() {
@@ -245,30 +231,28 @@
               alert("Yo, give me a name and some cool stuff dawg");
               return;
             }
-            console.log(JSON.stringify({
-    name: name,
-    rockshape: selected.shape,
-    rockmisc: selected.misc,
-    rockeyes: selected.eye,
-    owner: userId
-  }))
-fetch('/rock', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    name: name,
-    rockshape: selected.shape,
-    rockmisc: selected.misc,
-    rockeyes: selected.eye,
-    owner: userId
-  })
-})
+
+            fetch('/rock', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                name: name,
+                rockshape: selected.shape,
+                rockmisc: selected.misc,
+                rockeyes: selected.eye,
+                owner: userId
+                })
+            })
             .then(res => res.json())
             .then(data => alert(data.message))
             .catch(console.error);
-          }
+        }
+        /**
+         * displays the images menu
+         * im so fucking tired bro  jfcccccccccccccccc
+         */
         function showMenu(menu) {
             const menus = document.querySelectorAll('.menu');
             menus.forEach(m => m.classList.remove('active'));
