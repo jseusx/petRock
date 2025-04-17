@@ -4,13 +4,16 @@ from flask_login import UserMixin, LoginManager, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from collections import defaultdict
 import os
+import psycopg2
 import json
 import utils
 import secrets
 
 app = Flask(__name__, template_folder= 'frontend/html', static_folder='frontend/static')
 basedir = os.path.abspath(os.path.dirname(__file__))
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://admin:root@localhost:5432/PetRock'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = secrets.token_hex(16)
 
@@ -44,6 +47,7 @@ class Rock(db.Model):
     __tablename__ = 'rock'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+
     rockshape = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
     rockeyes = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
     rockmisc = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
@@ -91,19 +95,23 @@ def initialize_database():
 
         # Creating items to add to database
         items = [
-            {"id": 101 ,"item_type": "eye" ,"item_path": "googlyeyes.png", "price": 25},
-            {"id": 102,"item_type": "eye" ,"item_path": "girlface.png" , "price": 20},
-            {"id": 103,"item_type": "eye" ,"item_path": "eyelash.png" , "price": 20},
-            {"id": 104,"item_type": "eye","item_path": "angryeyes.png" , "price": 15},
-            {"id": 105,"item_type": "eye" ,"item_path": "tiredeyes.png" , "price": 15},
-            {"id": 201,"item_type": "shape" ,"item_path": "rockshape1.jpg" , "price": 35},
-            {"id": 202,"item_type": "shape","item_path": "blackrock.png", "price": 25},
-            {"id": 203,"item_type": "shape" ,"item_path": "rockshape2.png", "price": 40},
-            {"id":204,"item_type": "shape" ,"item_path": "rockshape3.png" , "price": 35},
-            {"id": 301,"item_type": "misc","item_path": "catears.png", "price": 30},
-            {"id": 302,"item_type": "misc","item_path": "wizardhat.png", "price": 40},
-            {"id": 303,"item_type": "misc","item_path": "piratehat.png" , "price": 50},
-            {"id": 304,"item_type": "misc" ,"item_path": "crown.png", "price": 75},
+
+            {"id": 101 ,"item_type": "eye" ,"item_path": "/static/src/googlyeyes.png", "price": 25},
+            {"id": 102,"item_type": "eye" ,"item_path": "/static/src/girlface.png" , "price": 20},
+            {"id": 103,"item_type": "eye" ,"item_path": "/static/src/eyelash.png" , "price": 20},
+            {"id": 104,"item_type": "eye","item_path": "/static/src/angryeyes.png" , "price": 15},
+            {"id": 105,"item_type": "eye" ,"item_path": "/static/src/tiredeyes.png" , "price": 15},
+            {"id": 201,"item_type": "shape" ,"item_path": "/static/src/rockshape1.jpg" , "price": 35},
+            {"id": 202,"item_type": "shape","item_path": "/static/src/blackrock.png", "price": 25},
+            {"id": 203,"item_type": "shape" ,"item_path": "/static/src/rockshape2.png", "price": 40},
+            {"id":204,"item_type": "shape" ,"item_path": "/static/src/rockshape3.png" , "price": 35},
+            {"id": 205, "item_type": "shape", "item_path": "/static/src/rockShape1.png", "price": 35},
+            {"id": 301,"item_type": "misc","item_path": "/static/src/catears.png", "price": 30},
+            {"id": 302,"item_type": "misc","item_path": "/static/src/wizardhat.png", "price": 40},
+            {"id": 303,"item_type": "misc","item_path": "/static/src/piratehat.png" , "price": 50},
+            {"id": 304,"item_type": "misc" ,"item_path": "/static/src/crown.png", "price": 75},
+            {"id": 305, "item_type": "misc", "item_path": "/static/src/rockMisc1.png", "price": 75},
+
         ]
 
         for item_data in items:
@@ -126,10 +134,11 @@ def index():
     #values cant be null example of what values should be
     # rock = Rock(
     #     name='Rocky',
-    #     rockshape='rockshape1', 
-    #     rockcolor='gray',    
-    #     rockmisc='wizardhat', 
-    #     owner=brady.id      
+    #     rockshape='rockshape1',
+    #     rockcolor='gray',
+    #     rockmisc='wizardhat',
+    #     owner=brady.id
+
     # )
     # db.session.add(rock)
     # db.session.commit()
@@ -145,7 +154,7 @@ def index():
 def unlock_item():
     data = request.get_json()
     item_id = data['item_id']
-    
+
     user = current_user
 
     item = Item.query.get(item_id)
@@ -153,6 +162,7 @@ def unlock_item():
     #check if user alr bought item
     existing_unlock = UserUnlocks.query.filter_by(users_id=user.id, unlock_name=item.item_path).first()
     if existing_unlock:
+
         return {"error": "Item already purchased"}, 400   
     
     if user.balance >= item.price:
@@ -205,20 +215,21 @@ def create_rock():
         
         # Create a new rock object
         rock = Rock(
-            name=name,
-            rockshape=rockshape,
-            rockeyes=rockeyes,
-            rockmisc=rockmisc,
-            owner=owner
+            name=data['name'],
+            rockshape=data['rockshape'],
+            rockeyes=data['rockeyes'],
+            rockmisc=data['rockmisc'],
+            owner=data['owner']
         )
         db.session.add(rock)
         db.session.commit()
-        return {"message": "Rock created successfully"}, 201
-    return {"error": "Invalid input"}, 400
+        return {"message": "Rock added successfully"}, 201
+    return {"error": "/rock post fail"}, 400
+
 
 @app.route('/rock/<rock_id>', methods=['GET', 'DELETE', 'PUT'])
 def handle_rocks(rock_id):
-    rock = Rock.query.get_or_404(rock_id)
+    rock = Rock.query.get(rock_id)
     if request.method == 'GET':
         return {
             "name": rock.name,
@@ -253,12 +264,14 @@ def create_user():
         db.session.add(user)
         db.session.commit()
         return {"message": "User added successfully"}, 201
-    return {"error": "Invalid input"}, 400
+    return {"error": "/user post fail"}, 400
 
 # have to change this as well so that way password isnt just sent out in response
 @app.route('/user/<users_id>', methods=['GET', 'DELETE', 'PUT'])
 def handle_user(users_id):
+
     user = User.query.get_or_404(users_id)
+
     if request.method == 'GET':
         return {
             "username": user.username,
@@ -278,35 +291,17 @@ def handle_user(users_id):
         return {"message": f"User {user.username} successfully deleted."}
 
 # takes as input, a user id and an item type (eye, shape, misc) and returns a json object with all the items of that type that the user has unlocked
-'''@app.route('/user/<user_id>/unlocks/<string:item_type>', methods=['GET'])
-def get_user_unlocked(user_id, item_type):
-    user = User.query.get_or_404(user_id)
-    unlocked_items = (
-        db.session.query(Item).join(UserUnlocks,Item.id == UserUnlocks.item_id)
-        .filter(UserUnlocks.user_id == user.id, Item.item_type == item_type).all()
-    )
-    item_list = [
-        {
-            'id':item.id,
-            'item_type': item.item_type,
-            'item_path': item.item_path,
-            'price': item.price
-        }
-        for item in unlocked_items
-    ]
-    return jsonify({
-                   'user_id': user.id,
-                   'item_type': item_type,
-                   'unlocked_items': item_list}
-    )'''
 
 @app.route('/user/<int:user_id>/unlocks', methods=['GET'])
 def get_all_unlocks(user_id):
-    user = User.query.get_or_404(user_id) # check to see if user exists first
+    user = User.query.get(user_id) # check to see if user exists first
     # select all items, compare them to items unlocked, and compare items unlocked to current user
     unlocked_items = (
         db.session.query(Item)
-        .join(UserUnlocks, Item.item_path == UserUnlocks.unlock_name)
+        .join(UserUnlocks, Item.id == UserUnlocks.item_id)
+
+
+
         .filter(UserUnlocks.user_id == user_id)
         .all()
     )
@@ -333,9 +328,19 @@ def create_item():
         return {"message": "Item added successfully"}, 201
     return {"error": "Invalid input"}, 400
 
+@app.route('/items', methods=['GET'])
+def get_all_items():
+    items = Item.query.all()
+    items_data = [{
+        'id': item.id,
+        'item_type': item.item_type,
+        'item_path': item.item_path
+    } for item in items]
+    return jsonify({'dbItems': items_data})
+
 @app.route('/item/<item_id>', methods=['GET', 'DELETE', 'PUT'])
 def handle_items(item_id):
-    item = Item.query.get_or_404(item_id)
+    item = Item.query.get(item_id)
     if request.method == 'GET':
         return {
             "item_type": item.item_type,
@@ -387,7 +392,8 @@ def handle_task(task_id):
     if request.method == 'DELETE':
         if not task:
             return {"error": "Task not found"}, 404
-        
+
+       
         # Increment user's balance by 10
         user = User.query.get(task.users_id)
         if user:
@@ -395,6 +401,7 @@ def handle_task(task_id):
             db.session.commit()
 
         # Delete the task
+
         db.session.delete(task)
         db.session.commit()
         return {"message": f"Task {task_id} deleted successfully"}, 200
@@ -411,7 +418,9 @@ def login():
 
         # print(user.password_hash)
         print(password)
-        print(user)        
+
+        print(user)
+
 
         # print(user.password_hash)
         print(password)
@@ -455,11 +464,11 @@ def create_account():
         if user:
             flash("Username already exists please use a different one.", "danger")
             return render_template('create_account.html')
-        
+
         if password != re_password:
             flash("Passwords did not match. Please try again.", "danger")
             return render_template('create_account.html')
-        
+
         # Hash the password and create a new user
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
         new_user = User(username=username, password_hash=hashed_password)
@@ -477,7 +486,9 @@ def create_account():
 @app.route('/creation')
 @login_required
 def creation():
+
     return render_template('creation.html', user_id=current_user.id)
+
 
 @app.route('/todo')
 @login_required
@@ -485,6 +496,7 @@ def todo():
     user_tasks = Task.query.filter_by(users_id=current_user.id).all()
     tasks_list = [{
         "id": task.id,
+
         "description": task.description, 
         "completion_date": task.completion_date} for task in user_tasks]
 
