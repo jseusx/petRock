@@ -48,9 +48,9 @@ class Rock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
-    rockshape = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
-    rockeyes = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
-    rockmisc = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
+    rockshape = db.Column(db.String(50), nullable=False)
+    rockeyes = db.Column(db.String(50), nullable=False)
+    rockmisc = db.Column(db.String(50), nullable=False)
     owner = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):
