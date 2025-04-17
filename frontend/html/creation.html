@@ -8,6 +8,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <title>PetRock</title>
     <style>
+
         * {
             margin: 0;
             padding: 0;
@@ -37,6 +38,7 @@
             top: 0;
             z-index: 1000;
         }
+
         .logo {
             display: flex;
             align-items: center;
@@ -48,6 +50,7 @@
             width: 36px;
             margin-right: 10px;
         }
+
         nav ul {
             display: flex;
             list-style: none;
@@ -143,6 +146,7 @@
         }
     </style>
     <script>
+
         /**
         * yeah, half of these fucking variables are redudandant but who cares
         * i wrote them when i started this shit and low key forgot about them
@@ -155,6 +159,7 @@
         };
         const rockBucks = 20;
         const userId = 1; // TODO: replace with actual user ID
+
         const menuParts = {
             shapeMenu: "shape",
             eyesMenu: "eyes",
@@ -162,6 +167,7 @@
         };
         // fetch data for unlocked objects of user, and populates each menu according to category
         // additionally displays menu 1 by default
+
         window.onload = async function () {
             try {
                 const response = await fetch('/items');
@@ -261,11 +267,73 @@
                 selectedMenu.classList.toggle('active');
             }
         }
+
+        //reset customization to default
+        function resetRock() {
+            rockShape = "/static/src/rockShape1.png";
+            rockEyes = "/static/src/rockEyes1.png";
+            rockMisc = "/static/src/rockMisc1.png";
+
+            const customizationArea = document.querySelector('.customization-area');
+            customizationArea.innerHTML = '';
+        }
+        /** gets name from input box and gets selected options, and creates a rock object
+        to send to backend and upload to db*/
+        function submitRock() {
+            const name = document.querySelector("input[name='name']").value;
+
+            if (!name || !selected.shape || !selected.eye || !selected.misc) {
+              alert("Yo, give me a name and some cool stuff dawg");
+              return;
+            }
+            fetch('/rock', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                name: name,
+                rockshape: selected.shape,
+                rockmisc: selected.misc,
+                rockeyes: selected.eye,
+                owner: userId
+              })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Failed to create rock.");
+                }
+            })
+            .then(data => {
+                alert(data.message); // Show success message
+                window.location.href = 'index'; // Redirect to homepage
+            })
+            .catch(error => {
+                console.error("Error creating rock:", error);
+                alert("An error occured while creating your rock.");
+            });
+          };
+
+        function showMenu(menuId) {
+            // Hide all menus
+            const menus = document.querySelectorAll('.menu');
+            menus.forEach(menu => {
+                menu.style.display = 'none';
+            });
+
+            // Show the selected menu
+            const selectedMenu = document.getElementById(menuId);
+            if (selectedMenu) {
+                selectedMenu.style.display = 'grid'; // Use 'grid' to match your CSS
+            }
+        }
     </script>
 </head>
 <body>
     <header>
+
         <a href="index.html" class="logo">
+
             <img src="/static/src/rockpet.png" alt="PetRock Logo">
             <span>PetRock</span>
         </a>
@@ -293,6 +361,7 @@
         </div>
 
         <div id="rockShape" class="menu">
+
             <img src="/static/src/rockShape1.png" alt="Shape 1" onclick="applyImage('/static/src/rockShape1.png', 'rock-shape')">
             <img src="/static/src/rockShape2.png" alt="Shape 2" onclick="applyImage('/static/src/rockShape2.png', 'rock-shape')">
             <img src="/static/src/rockShape3.png" alt="Shape 3" onclick="applyImage('/static/src/rockShape3.png', 'rock-shape')">
@@ -313,11 +382,14 @@
             <img src="/static/src/crown.png" alt="Misc 2" onclick="applyImage('/static/src/crown.png', 'rock-misc')">
             <img src="/static/src/piratehat.png" alt="Misc 3" onclick="applyImage('/static/src/piratehat.png', 'rock-misc')">
             <img src="/static/src/wizardhat.png" alt="Misc 4" onclick="applyImage('/static/src/wizardhat.png', 'rock-misc')">
+
         </div>
     </div>
 
     <div style="display: flex; align-items: center; margin-top: 20px; padding-left: 20px;">
+
         <img src="/static/src/rockBux.png" alt="rockBux" style="width: 80px; height: 80px; margin-right: 10px;"> <!-- Replace with the actual path to your image -->
+
         <p style="font-size: 5.0rem; margin: 0;">20</p>
     </div>
 
@@ -332,6 +404,7 @@
             <div class="customization-area"></div>
             <br>
             <button type="submit" class="btn btn-primary" style="font-size: 1.2rem;" onclick="submitRock()">Create Pet</button>
+
             <button type="button" class="btn btn-secondary" style="font-size: 1.2rem; margin-left: 10px;" onclick ="resetRock()">Restart</button>
         </form>
     </div>

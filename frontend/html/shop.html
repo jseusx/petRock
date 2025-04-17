@@ -9,11 +9,117 @@
         href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css"
         href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src = "../js/javascript.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src = "/static/js/javascript.js"></script>
     <style>
+        /* Add the new styles here */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .totalIcon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 0;
+            background-color: #f8fafb;
+        }
+
+        .currency-container {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .currency-icon {
+            width: 50px;
+            margin-right: 12px;
+        }
+
+        .currency-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0084ff;
+        }
+
+        .carousel-item {
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .carousel-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .carousel-item:not(.active) {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .btn-primary {
+            background-color: #0084ff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0069d9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 132, 255, 0.2);
+        }
+
+        .purchased {
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header, .modal-footer {
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
 
         .image-container {
-        position: relative; 
+            position: relative;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 10px;
+            height: 100%; 
         }   
 
         .image-container img.carousel-img {
@@ -37,10 +143,105 @@
             font-weight: bold;
             font-size: 20px;
         }
+
+        .image-container .buy-button {
+            align-self: flex-end; /* Align the button to the right */
+            margin-top: 10px;
+        }        
         .totalIcon {
             padding-top: 20px;
         }
         
+        .purchased  {
+            opacity: 0.25;
+            /* makes it so purchased items not clickable */
+            pointer-events: none;
+        }
+
+            /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-container {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            /* padding: 20px; */
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: 20px;
+            font-size: 16px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px;
+            gap: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        /* Footer */
+        footer {
+            padding: 20px 5%;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        footer .links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        footer a:hover {
+            color: #0084ff;
+        }
+
+        /* so the item container remains the same size when button disappears on sucessful purchase */
+        .placeholder-label {
+            display: inline-block;
+            padding: 8px 16px; /* Match the button's padding */
+            background-color: #ddd; /* Light gray background */
+            color: #666; /* Text color */
+            border-radius: 20px; /* Match the button's border radius */
+            font-weight: 600; /* Bold text */
+            text-align: center;
+            align-self: flex-end; /* Align to the same position as the button */
+            margin-top: 10px; /* Match the button's margin */
+            height: 36px; /* Match the button's height */
+            line-height: 20px; /* Center the text vertically */
+            cursor: default; /* No pointer cursor */
+        }        
+
     </style>
 </head>
 
@@ -50,293 +251,207 @@
 
     <!-- navbar -->
     <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="#">
-            <img src="/src/rockpet.png" width="30" height="30" class="d-inline-block align-top me-2" alt="Logo">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <img src="/static/src/rockpet.png" width="30" height="30" class="d-inline-block align-top me-2" alt="Logo">
             PetRock
         </a>
     </nav>
 
+    <!-- Currency Display -->
     <div class="totalIcon">
-        <img src="../src/moneyicon.png" width="150" height=auto style="float:left">
-        <!-- NOTE filler value for now prob should read value from user table one database created -->
-        <p id="totalMoney" style="font-size:50px; font-weight: bold;">75</p>
+        <div class="currency-container">
+            <img src="/static/src/moneyicon.png" alt="Currency" class="currency-icon">
+            <div class="currency-value" id="totalMoney">{{ user_balance }}</div>
+        </div>
     </div>
 
+    <!-- This was painful to have to rewrite -->
     <section class="pt-5 pb-5">
         <div class="container">
+            {% for category, items in grouped_items.items() %}
             <div class="row">
                 <div class="col-6">
-                    <h3 class="mb-3">Eyes</h3>
+                    <h3 class="mb-3">{{ category | capitalize }}</h3>
                 </div>
                 <div class="col-6 text-right">
-                    <a class="btn btn-primary mb-3 mr-1" 
-                       href="#carouselEyes"
-                       role="button"
-                        data-slide="prev">
+                    <a class="btn btn-primary mb-3 mr-1" href="#carousel{{ category }}" role="button" data-slide="prev">
                         <i class="fa fa-arrow-left"></i>
                     </a>
-                    <a class="btn btn-primary mb-3"
-                       href="#carouselEyes"
-                       role="button"
-                       data-slide="next">
+                    <a class="btn btn-primary mb-3" href="#carousel{{ category }}" role="button" data-slide="next">
                         <i class="fa fa-arrow-right"></i>
                     </a>
                 </div>
+            </div>
+            <div class="row">
                 <div class="col-12">
-                    <div id="carouselEyes" 
-                         class="carousel slide"
-                         data-ride="carousel"
-                         data-interval="false">
-
+                    <div id="carousel{{ category }}" class="carousel slide" data-ride="carousel" data-interval="false">
                         <div class="carousel-inner">
-                            <div class="carousel-item active">
+                            {% for chunk in items|batch(3) %}
+                            <div class="carousel-item {% if loop.first %}active{% endif %}">
                                 <div class="row">
+                                    {% for item in chunk %}
                                     <div class="col-md-4 mb-3">
                                         <div class="card">
                                             <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/googlyeyes.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
+                                                <img class="img-fluid carousel-img {% if item.item_path in purchased_item_paths %}purchased{% endif %}" 
+                                                     alt="{{ item.item_type }}" 
+                                                     src="/static/src/{{ item.item_path }}" 
+                                                     data-item-id="{{ item.id }}">
+                                           <img src="/static/src/moneyicon.png" class="priceimg">
+                                           <p class="price-value">{{ item.price }}</p>
+                                           {% if item.item_path not in purchased_item_paths %}
+                                           <button class="buy-button btn btn-primary" 
+                                                data-item-id="{{ item.id }}" 
+                                                data-item-name="{{ item.item_type }}" 
+                                                data-item-price="{{ item.price }}">
+                                            Buy
+                                            </button>
+                                            {% else %}
+                                            <span class="placeholder-label">Purchased</span>
+                                            {% endif %}
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/girlface.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/eyelash.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
+                                    {% endfor %}
                                 </div>
                             </div>
-                            <div class="carousel-item">
-                                <div class="row">
-
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/angryeyes.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/tiredeyes.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                    </div>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            {% endfor %}
+        </div>              
     </section>
 
-    <section class="pt-5 pb-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-6">
-                    <h3 class="mb-3">Shapes</h3>
-                </div>
-                <div class="col-6 text-right">
-                    <a class="btn btn-primary mb-3 mr-1" 
-                       href="#carouselShapes"
-                       role="button"
-                        data-slide="prev">
-                        <i class="fa fa-arrow-left"></i>
-                    </a>
-                    <a class="btn btn-primary mb-3"
-                       href="#carouselShapes"
-                       role="button"
-                       data-slide="next">
-                        <i class="fa fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="col-12">
-                    <div id="carouselShapes" 
-                         class="carousel slide"
-                         data-ride="carousel"
-                         data-interval="false">
-
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/rockshape1.jpg">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/blackrock.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/rockshape2.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="row">
-
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/rockshape3.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="pt-5 pb-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-6">
-                    <h3 class="mb-3">Misc</h3>
-                </div>
-                <div class="col-6 text-right">
-                    <a class="btn btn-primary mb-3 mr-1" 
-                       href="#carouselMisc"
-                       role="button"
-                        data-slide="prev">
-                        <i class="fa fa-arrow-left"></i>
-                    </a>
-                    <a class="btn btn-primary mb-3"
-                       href="#carouselMisc"
-                       role="button"
-                       data-slide="next">
-                        <i class="fa fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="col-12">
-                    <div id="carouselMisc" 
-                         class="carousel slide"
-                         data-ride="carousel"
-                         data-interval="false">
-
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/catears.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/wizardhat.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/piratehat.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">25</p>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="row">
-
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card">
-                                            <div class="image-container">
-                                                <img class="img-fluid carousel-img" alt="100%x280" src="../src/crown.png">
-                                                <img src="../src/moneyicon.png" class="priceimg">
-                                                <p class="price-value">75</p>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-    <!-- Default Bootstrap Modal -->
-    <div id="purchaseModal" class="modal" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content">
+    <!-- Purchase Modal -->
+    <div class="modal-overlay" id="purchaseModal">
+        <div class="modal-container">
             <div class="modal-header">
-              <h5 class="modal-title">Purchase Confirmation</h5>
+                <h5 class="modal-title">Purchase Confirmation</h5>
             </div>
             <div class="modal-body">
-                <!-- mostly filler cause it gets rewritten -->
-              <p id="modalText">Are you sure you want to make this purchase?</p>
+                <p id="modalText">Are you sure you want to make this purchase?</p>
             </div>
             <div class="modal-footer">
-              <button id="cancelButton" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button id="confirmButton" type="button" class="btn btn-primary">Confirm</button>
+                <button id="cancelButton" class="btn btn-secondary">Cancel</button>
+                <button id="confirmButton" class="btn btn-primary">Confirm</button>
             </div>
-          </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <div>© 2024 PetRock Inc. All rights reserved.</div>
+        <div class="links">
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy</a>
+        </div>
+    </footer>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Fade in animations
+            gsap.to('.fade-in', { 
+                opacity: 1, 
+                y: 0, 
+                duration: 1,
+                stagger: 0.2,
+                scrollTrigger: {
+                    trigger: '.fade-in',
+                    start: 'top 90%',
+                }
+            });
+            
+            // Shop items animation
+            document.querySelectorAll('.shop-section').forEach(section => {
+                gsap.to(section.querySelectorAll('.shop-item'), {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top 80%',
+                    }
+                });
+            });
+            
+            // Carousel functionality
+            const itemsPerView = window.innerWidth > 992 ? 3 : window.innerWidth > 768 ? 2 : 1;
+            const itemWidth = 100 / itemsPerView;
+            
+            // Next and Prev buttons
+            const handleCarouselNavigation = (sectionId, direction) => {
+                const container = document.getElementById(`${sectionId}-container`);
+                const items = container.querySelectorAll('.shop-item');
+                const visibleItems = Math.min(itemsPerView, items.length);
+                
+                // Calculate the total number of "pages"
+                const totalPages = Math.ceil(items.length / visibleItems);
+                
+                // Get current position
+                const currentPosition = parseInt(container.getAttribute('data-position') || 0);
+                
+                // Calculate new position
+                let newPosition;
+                if (direction === 'next') {
+                    newPosition = (currentPosition + 1) % totalPages;
+                } else {
+                    newPosition = (currentPosition - 1 + totalPages) % totalPages;
+                }
+                
+                // Update position attribute
+                container.setAttribute('data-position', newPosition);
+                
+                // Apply transform
+                gsap.to(container, {
+                    x: -newPosition * (visibleItems * (100 / items.length)) + '%',
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            };
+            
+            // Setup event listeners for carousel navigation
+            document.querySelectorAll('.prev-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    handleCarouselNavigation(btn.dataset.section, 'prev');
+                });
+            });
+            
+            document.querySelectorAll('.next-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    handleCarouselNavigation(btn.dataset.section, 'next');
+                });
+            });
+        
+
+            // Button hover animations
+            const buttons = document.querySelectorAll('.btn');
+            
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    gsap.to(button, {
+                        scale: 1.05,
+                        duration: 0.3
+                    });
+                });
+                
+                button.addEventListener('mouseleave', () => {
+                    gsap.to(button, {
+                        scale: 1,
+                        duration: 0.3
+                    });
+                });
+            });
+        });
+
+
+</script>
+
+
 
 
     <!-- JavaScript dependencies -->

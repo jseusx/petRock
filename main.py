@@ -11,7 +11,9 @@ import secrets
 
 app = Flask(__name__, template_folder= 'frontend/html', static_folder='frontend/static')
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://root:root@localhost:5432/PetRock'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://admin:root@localhost:5432/PetRock'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = secrets.token_hex(16)
 
@@ -45,9 +47,10 @@ class Rock(db.Model):
     __tablename__ = 'rock'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    rockshape = db.Column(db.String(50),  nullable=False)
-    rockeyes = db.Column(db.String(50),  nullable=False)
-    rockmisc = db.Column(db.String(50),  nullable=False)
+
+    rockshape = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
+    rockeyes = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
+    rockmisc = db.Column(db.String(50), db.ForeignKey('item.item_path'), nullable=False)
     owner = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):
@@ -58,8 +61,7 @@ class UserUnlocks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     users_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     unlock_name = db.Column(db.String(50), nullable=False)
-    unlocked_at = db.Column(db.DateTime, server_default=db.func.now())
-
+    
     def __repr__(self):
         return '<UserUnlocks %r>' % self.unlock_name
 
@@ -93,6 +95,7 @@ def initialize_database():
 
         # Creating items to add to database
         items = [
+
             {"id": 101 ,"item_type": "eye" ,"item_path": "/static/src/googlyeyes.png", "price": 25},
             {"id": 102,"item_type": "eye" ,"item_path": "/static/src/girlface.png" , "price": 20},
             {"id": 103,"item_type": "eye" ,"item_path": "/static/src/eyelash.png" , "price": 20},
@@ -135,6 +138,7 @@ def index():
     #     rockcolor='gray',
     #     rockmisc='wizardhat',
     #     owner=brady.id
+
     # )
     # db.session.add(rock)
     # db.session.commit()
@@ -158,8 +162,9 @@ def unlock_item():
     #check if user alr bought item
     existing_unlock = UserUnlocks.query.filter_by(users_id=user.id, unlock_name=item.item_path).first()
     if existing_unlock:
-        return {"error": "Item already purchased"}, 400
 
+        return {"error": "Item already purchased"}, 400   
+    
     if user.balance >= item.price:
         user.balance -= item.price
         unlock = UserUnlocks(
@@ -193,9 +198,22 @@ def shop():
 
 
 @app.route('/rock', methods=['POST'])
+@login_required
 def create_rock():
     if request.is_json:
         data = request.get_json()
+
+        # Validate required fields
+        name = data.get('name')
+        rockshape = data.get('rockshape')
+        rockmisc = data.get('rockmisc')
+        rockeyes = data.get('rockeyes')
+        owner = data.get('owner')
+
+        if not name or not rockshape or not rockmisc or not rockeyes or not owner:
+            return {"error": "Missing required fields"}, 400
+        
+        # Create a new rock object
         rock = Rock(
             name=data['name'],
             rockshape=data['rockshape'],
@@ -208,6 +226,7 @@ def create_rock():
         return {"message": "Rock added successfully"}, 201
     return {"error": "/rock post fail"}, 400
 
+
 @app.route('/rock/<rock_id>', methods=['GET', 'DELETE', 'PUT'])
 def handle_rocks(rock_id):
     rock = Rock.query.get(rock_id)
@@ -215,7 +234,7 @@ def handle_rocks(rock_id):
         return {
             "name": rock.name,
             "rockshape": rock.rockshape,
-            "rockcolor": rock.rockcolor,
+            "rockeyes": rock.rockeyes,
             "rockmisc": rock.rockmisc,
             "owner": rock.owner
         }, 200
@@ -223,7 +242,7 @@ def handle_rocks(rock_id):
         data = request.get_json()
         rock.name = data['name']
         rock.rockshape = data['rockshape']
-        rock.rockcolor = data['rockcolor']
+        rock.rockeyes = data['rockeyes']
         rock.rockmisc = data['rockmisc']
         db.session.commit()
         return {"message": f"Rock {rock.name} successfully updated"}
@@ -250,7 +269,9 @@ def create_user():
 # have to change this as well so that way password isnt just sent out in response
 @app.route('/user/<users_id>', methods=['GET', 'DELETE', 'PUT'])
 def handle_user(users_id):
-    user = User.query.get(users_id)
+
+    user = User.query.get_or_404(users_id)
+
     if request.method == 'GET':
         return {
             "username": user.username,
@@ -270,6 +291,7 @@ def handle_user(users_id):
         return {"message": f"User {user.username} successfully deleted."}
 
 # takes as input, a user id and an item type (eye, shape, misc) and returns a json object with all the items of that type that the user has unlocked
+
 @app.route('/user/<int:user_id>/unlocks', methods=['GET'])
 def get_all_unlocks(user_id):
     user = User.query.get(user_id) # check to see if user exists first
@@ -277,6 +299,9 @@ def get_all_unlocks(user_id):
     unlocked_items = (
         db.session.query(Item)
         .join(UserUnlocks, Item.id == UserUnlocks.item_id)
+
+
+
         .filter(UserUnlocks.user_id == user_id)
         .all()
     )
@@ -288,6 +313,7 @@ def get_all_unlocks(user_id):
             for item in unlocked_items
         ]
     })
+
 @app.route('/item', methods=['POST'])
 def create_item():
     if request.is_json:
@@ -366,6 +392,16 @@ def handle_task(task_id):
     if request.method == 'DELETE':
         if not task:
             return {"error": "Task not found"}, 404
+
+       
+        # Increment user's balance by 10
+        user = User.query.get(task.users_id)
+        if user:
+            user.balance += 10
+            db.session.commit()
+
+        # Delete the task
+
         db.session.delete(task)
         db.session.commit()
         return {"message": f"Task {task_id} deleted successfully"}, 200
@@ -382,7 +418,9 @@ def login():
 
         # print(user.password_hash)
         print(password)
+
         print(user)
+
 
         # print(user.password_hash)
         print(password)
@@ -448,7 +486,9 @@ def create_account():
 @app.route('/creation')
 @login_required
 def creation():
-    return render_template('creation.html')
+
+    return render_template('creation.html', user_id=current_user.id)
+
 
 @app.route('/todo')
 @login_required
@@ -456,12 +496,13 @@ def todo():
     user_tasks = Task.query.filter_by(users_id=current_user.id).all()
     tasks_list = [{
         "id": task.id,
-        "description": task.description,
+
+        "description": task.description, 
         "completion_date": task.completion_date} for task in user_tasks]
 
-    return render_template('todo.html', users_id=current_user.id, tasks=tasks_list)
+    return render_template('todo.html', users_id=current_user.id, tasks=tasks_list, user_balance = current_user.balance)
     #return render_template('todo.html', users_id=current_user.id, tasks=json.dumps(tasks_data))
-
+    
 if __name__ == "__main__":
     port = 5000  # Default Flask port
     print(f"Server running at: http://127.0.0.1:{port}")
