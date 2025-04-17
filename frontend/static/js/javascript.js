@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var totalMoney = parseInt(totalMoneyElement.textContent);
     var currentItem = null;
 
+    
     // Handle Buy button clicks
     var buyButtons = document.querySelectorAll(".buy-button");
     buyButtons.forEach(function (button) {
@@ -19,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
             currentItem = { id: itemId, name: itemName, price: itemPrice };
 
             modalText.innerHTML = `Confirm Purchase of ${itemName} for ${itemPrice} Rockbux?`;
-            modal.style.display = "block";
+            modal.style.display = 'flex'; // Show the modal dynamically
         };
     });
 
