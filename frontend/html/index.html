@@ -391,15 +391,21 @@
     <!-- Header -->
     <header>
         <a href="index.html" class="logo">
-            <img src="/src/rockpet.png" alt="PetRock Logo">
+            <img src="/static/src/rockpet.png" alt="PetRock Logo">
             <span>PetRock</span>
         </a>
         <nav>
             <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="creation.html">Community</a></li>
-                <li><a href="shop.html">Store</a></li>
-                <li><a href="login.html" class="sign-in">Sign In</a></li>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('creation') }}">Create a Rock</a></li>
+                <li><a href="{{ url_for('shop') }}">Store</a></li>
+                <li>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('logout') }}" class="sign-in">Log out</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="sign-in">Sign In</a>
+                    {% endif %}
+                </li>
             </ul>
         </nav>
     </header>
@@ -410,14 +416,14 @@
             <h1>Stay Productive With Your Pet Rock Companion</h1>
             <p>Manage your tasks, stay motivated, and reward yourself with a virtual pet rock that cheers you on every step of the way.</p>
             <div class="hero-buttons">
-                <a href="login.html" class="btn btn-primary">Get Started</a>
-                <button class="btn btn-secondary">View Tasks</button>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Get Started</a>
+                <a href="{{ url_for('todo') }}" class="btn btn-secondary">View Tasks</a>
             </div>
         </div>
         <div class="hero-image">
             <div class="pet-rock-container">
                 <div class="shadow"></div>
-                <img src="../src/newrock.png" alt="PetRock Companion" class="pet-rock" id="petRock">
+                <img src="/static/src/newrock.png" alt="PetRock Companion" class="pet-rock" id="petRock">
             </div>
         </div>
     </section>
@@ -464,8 +470,8 @@
         <div class="achievements-image">
             <p>Your pet isn't just an ordinary rock - it's your own personal entourage. As you complete tasks, your rock will motivate you to keep going and celebrate your wins.</p>
             <div style="margin-top: 20px;">
-                <button class="btn btn-secondary">View Tasks</button>
-                <button class="btn btn-secondary">Join Community</button>
+                <a href="{{ url_for('todo') }}" class="btn btn-secondary">View Tasks</a>
+                <a href="{{ url_for('creation') }}" class="btn btn-secondary">Create a Rock</a>
             </div>
         </div>
     </section>
@@ -477,7 +483,7 @@
             <p>Join other users who have transformed their task management with a pet rock companion.</p>
         </div>
         <div class="cta-buttons">
-            <button class="btn btn-primary">Sign Up Free</button>
+            <a href="{{ url_for('create_account') }}" class="btn btn-primary">Sign Up Free</a>
             <button class="btn btn-secondary">Try Demo</button>
         </div>
     </section>
