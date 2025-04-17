@@ -58,58 +58,54 @@
         nav ul li a:hover {
             color: #0084ff;
         }
-        .left-panel {
-            border:pink solid 4px;
-            position: absolute;
-            top: 400px;
-            left: 20px;
-            width: 250px;
-            height:220px;
-            background-color: tan;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding-top:10px;
-        }
-        .button-grid {
-            margin-left:10px;
-            width:150px;
-            height: 200px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .button-grid button {
-            width: 60px;
-            height: 60px;
-            border: black solid 2px;
-            background-color: #f8f9fa;
-            cursor: pointer;
-        }
-        .button-grid button img {
-            width: 100%;
-            height: 100%;
-        }
-        .menu {
-            width:40px;
-            height: 200px;
-            display: none;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-top: 1px;
-            margin-left: 20px;
-            padding: 10px;
-            background-color: #f1f1f1;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .menu img {
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            border:#555 solid 1px;
-            margin-top:5px;
-        }
+            .button-grid {
+        position: fixed; /* Fix the grid to the left side of the screen */
+        top: 50%;
+        left: 10px; /* Adjust the left position as needed */
+        display: flex;
+        flex-direction: column; /* Align buttons vertically */
+        gap: 10px;
+    }
+
+    .button-grid button {
+        width: 60px;
+        height: 60px;
+        border: black solid 2px;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .button-grid button img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .menu {
+        position: absolute;
+        top: 47%;
+        left: 70px;
+        display: none;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 10px;
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        z-index: 1000;
+    }
+
+    .menu img {
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        border: #555 solid 1px;
+        margin-top: 5px;
+    }
+
+    .menu.active {
+        display: grid; /* Show the menu when active */
+    }
         .customization-area {
             position: relative;
             width: 300px;
@@ -121,6 +117,7 @@
             overflow: hidden;
         }
         .customization-area img {
+            z-index: 1;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -136,8 +133,8 @@
         }
         .rock-misc {
             z-index: 2;
-            width: 50%;
-            height: 50%;
+            width: 33%;
+            height: 33%;
         }
         .rock-eyes {
             z-index: 3;
@@ -146,6 +143,11 @@
         }
     </style>
     <script>
+        /**
+        * yeah, half of these fucking variables are redudandant but who cares
+        * i wrote them when i started this shit and low key forgot about them
+        * whatever, they're here
+        */
         const selected = {
             shape: 'rockShape1.png',
             misc: 'rockMisc1.png',
@@ -160,33 +162,54 @@
         };
         // fetch data for unlocked objects of user, and populates each menu according to category
         // additionally displays menu 1 by default
-        window.onload = () => {
-            fetch(`/user/${userId}/unlocks/all`)
-              .then(res => res.json())
-              .then(data => populateMenus(data.unlocked_items))
-              .catch(console.error);
-          };
+        window.onload = async function () {
+    try {
+      const response = await fetch('/items');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const itemsData = await response.json();
+
+      // Store it in a single variable
+      const allItems = itemsData;
+
+      // You can log to see or do something with it
+      console.log('Fetched items:', allItems);
+
+      // Example: use it to populate a dropdown or list
+      // document.getElementById('itemList').innerHTML = allItems.map(item => `<li>${item.name}</li>`).join('');
+
+    } catch (error) {
+      console.error('Error fetching items:', error);
+    }
+  };
         // TODO: GET THIS SHIT TO WORK!!!!!!
         // Want to try to get this to populate menus according to each item category on page load
         // May have to abandon this approach but it is what it is. I still have to update HTML
         // to support this functionality and actually test it
         function populateMenus(items) {
-            const categories = {};
-            items.forEach(item => {
-              if (!categories[item.item_type]) {
-                categories[item.item_type] = document.createElement('div');
-                categories[item.item_type].className = 'menu';
-                categories[item.item_type].id = item.item_type;
-                document.querySelector('.left-panel').appendChild(categories[item.item_type]);
-              }
+    const categories = [...new Set(items.map(item => item.category))];
 
-              const img = document.createElement('img');
-              img.src = `src/${item.item_path}`;
-              img.alt = item.item_type;
-              img.onclick = () => applyImage(img.src, layers[item.item_type], item);
-              categories[item.item_type].appendChild(img);
-            });
-          }
+    for (const category of categories) {
+      const menu = document.getElementById(`menu-${category}`);
+      if (!menu) {
+        console.warn(`No menu found for category: ${category}`);
+        continue;
+      }
+      menu.innerHTML = '';
+      const categoryItems = items.filter(item => item.category === category);
+      for (const item of categoryItems) {
+        const button = document.createElement('button');
+        button.classList.add('item-button');
+        const img = document.createElement('img');
+        img.src = item.image_path;
+        img.alt = item.name;
+        img.classList.add('item-image');
+        button.appendChild(img);
+        menu.appendChild(button);
+      }
+    }
+  }
 
 
         // apply image to the customization area
@@ -194,7 +217,7 @@
             const customizationArea = document.querySelector('.customization-area');
             let imgElement = customizationArea.querySelector(`.${layer}`);
 
-            //create layer if none at first
+            //add image layer
             if (!imgElement) {
                 imgElement = document.createElement('img');
                 imgElement.classList.add(layer);
@@ -222,20 +245,38 @@
               alert("Yo, give me a name and some cool stuff dawg");
               return;
             }
-            fetch('/rock', {
-              method: 'POST',
-              body: JSON.stringify({
-                name: name,
-                rockshape: selected.shape.item_path,
-                rockmisc: selected.misc.item_path,
-                rockeyes: selected.eye.item_path,
-                owner: userId
-              })
-            })
+            console.log(JSON.stringify({
+    name: name,
+    rockshape: selected.shape,
+    rockmisc: selected.misc,
+    rockeyes: selected.eye,
+    owner: userId
+  }))
+fetch('/rock', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: name,
+    rockshape: selected.shape,
+    rockmisc: selected.misc,
+    rockeyes: selected.eye,
+    owner: userId
+  })
+})
             .then(res => res.json())
             .then(data => alert(data.message))
             .catch(console.error);
           }
+        function showMenu(menu) {
+            const menus = document.querySelectorAll('.menu');
+            menus.forEach(m => m.classList.remove('active'));
+            const selectedMenu = document.getElementById(menu);
+            if (selectedMenu) {
+                selectedMenu.classList.toggle('active');
+            }
+        }
     </script>
 </head>
 <body>
@@ -268,14 +309,26 @@
         </div>
 
         <div id="rockShape" class="menu">
-            <img src="/static/src/rockShape1.png" alt="Shape 1" onclick="changeAppearance(1, 'rockShape')">
-            <img src="/static/src/rockShape2.png" alt="Shape 2" onclick="changeAppearance(2, 'rockShape')">
-            <img src="/static/src/rockShape3.png" alt="Shape 3" onclick="changeAppearance(3, 'rockShape')">
+            <img src="/static/src/rockShape1.png" alt="Shape 1" onclick="applyImage('/static/src/rockShape1.png', 'rock-shape')">
+            <img src="/static/src/rockShape2.png" alt="Shape 2" onclick="applyImage('/static/src/rockShape2.png', 'rock-shape')">
+            <img src="/static/src/rockShape3.png" alt="Shape 3" onclick="applyImage('/static/src/rockShape3.png', 'rock-shape')">
+            <img src="/static/src/blackrock.png" alt="Shape 4" onclick="applyImage('/static/src/blackrock.png', 'rock-shape')">
+            <img src="/static/src/rockshape1.png" alt="Shape 5" onclick="applyImage('/static/src/rockshape1.png', 'rock-shape')">
+        </div>
+
+        <div id="rockEyes" class="menu">
+            <img src="/static/src/googlyeyes.png" alt="Eyes 1" onclick="applyImage('/static/src/googlyeyes.png', 'rock-eyes')">
+            <img src="/static/src/girlface.png" alt="Eyes 2" onclick="applyImage('/static/src/girlface.png', 'rock-eyes')">
+            <img src="/static/src/rockEyes.png" alt="Eyes 3" onclick="applyImage('/static/src/rockEyes.png', 'rock-eyes')">
+            <img src="/static/src/eyelash.png" alt="Eyes 4" onclick="applyImage('/static/src/eyelash.png', 'rock-eyes')">
+            <img src="/static/src/tiredeyes.png" alt="Eyes 5" onclick="applyImage('/static/src/tiredeyes.png', 'rock-eyes')">
         </div>
 
         <div id="rockMisc" class="menu">
-            <img src="/static/src/rockMisc1.png" alt="Misc 1" onclick="changeAppearance(1, 'rockMisc')">
-            <img src="/static/src/rockMisc2.png" alt="Misc 2" onclick="changeAppearance(2, 'rockMisc')">
+            <img src="/static/src/rockMisc1.png" alt="Misc 1" onclick="applyImage('/static/src/rockMisc1.png', 'rock-misc')">
+            <img src="/static/src/crown.png" alt="Misc 2" onclick="applyImage('/static/src/crown.png', 'rock-misc')">
+            <img src="/static/src/piratehat.png" alt="Misc 3" onclick="applyImage('/static/src/piratehat.png', 'rock-misc')">
+            <img src="/static/src/wizardhat.png" alt="Misc 4" onclick="applyImage('/static/src/wizardhat.png', 'rock-misc')">
         </div>
     </div>
 
@@ -290,7 +343,7 @@
     </div>
 
     <div>
-        <form action="creation.html" method="post" style="text-align: center; margin-top: 20px;">
+        <form onsubmit="submitRock(); return false;" style="text-align: center; margin-top: 20px;">
             <input type="text" name="name" placeholder="Enter your pet's name" required style="width: 300px; padding: 10px; font-size: 1.2rem; border-radius: 5px; border: 1px solid #ccc;">
             <div class="customization-area"></div>
             <br>
