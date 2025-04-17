@@ -303,6 +303,7 @@
                 if (!res.ok) {
                     throw new Error("Failed to create rock.");
                 }
+                return res.json();
             })
             .then(data => {
                 alert(data.message); // Show success message
