@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from flask_login import UserMixin, LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from collections import defaultdict
@@ -410,13 +411,14 @@ def login():
     print(check_password_hash('<stored_hash>', 'test'))  # Replace <stored_hash> with the actual hash from the database
     if request.method == 'POST':
         # retrieve form data
-        username = request.form.get('username')
+        username = request.form.get('username').strip().lower()
         password = request.form.get('password')
 
         # Query database for the user by username
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter(func.lower(User.username) == username).first()
 
         # print(user.password_hash)
+        print(username)
         print(password)
 
         print(user)
@@ -448,7 +450,7 @@ def logout():
 def create_account():
     if request.method == 'POST':
         # retrieve data from form
-        username = request.form.get('username')
+        username = request.form.get('username').strip().lower()
         password = request.form.get('password')
         re_password = request.form.get('re-password')
 
@@ -457,7 +459,7 @@ def create_account():
             return render_template('create_account.html')
 
         # Query database for the user by username
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter(func.lower(User.username) == username).first()
 
         # Check the username to see if it exists
         # Also check if password was retyped correctly
