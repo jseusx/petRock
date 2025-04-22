@@ -8,7 +8,7 @@
     <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- External CSS -->
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='../static/css/styles.css') }}">
     <!-- font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -17,8 +17,8 @@
 
     <!-- navbar -->
     <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="index.html">
-            <img src="../src/rockpet.png" width="30" height="30" class="d-inline-block align-top me-2" alt="Logo">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <img src="/static/src/rockpet.png" width="30" height="30" class="d-inline-block align-top me-2" alt="Logo">
             PetRock
         </a>
     </nav>
@@ -27,19 +27,30 @@
     <div class="login-wrapper">
         <div class="login-container">
             <h3 class="text-center mb-4">Sign In</h3>
-            <form>
+                <!-- Display Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+            <form action="{{ url_for('login') }}" method="post">
                 <div class="username-container">
-                    <input type="text" id="username" class="form-control" placeholder="Username">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
                 </div>
                 <div class="mb-3">
-                    <input type="password" id="password" class="form-control" placeholder="Password">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
                 </div>
                 <button type="submit" class="btn btn-custom w-100">Sign In</button>
             </form>
         </div>
         <!-- Create Account Link -->
         <div class="create-account-link">
-            New here? <a href="./create_account.html">Let's rock and get started</a>
+            New here? <a href="{{ url_for('create_account') }}">Let's rock and get started</a>
         </div>
     </div>
 

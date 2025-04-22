@@ -8,57 +8,106 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <title>PetRock</title>
     <style>
-        .left-panel {
-            border:pink solid 4px;
-            position: absolute;
-            top: 400px;
-            left: 20px;
-            width: 250px;
-            height:220px;
-            background-color: tan;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        header {
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding-top:10px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 5%;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo img {
+            width: 36px;
+            margin-right: 10px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        nav ul li {
+            margin-left: 24px;
+        }
+        nav ul li a:hover {
+            color: #0084ff;
         }
         .button-grid {
-            margin-left:10px;
-            width:150px;
-            height: 200px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            position: fixed;
+            top: 50%;
+            left: 10px;
+            display: flex;
+            flex-direction: column;
             gap: 10px;
         }
+
         .button-grid button {
             width: 60px;
             height: 60px;
             border: black solid 2px;
             background-color: #f8f9fa;
             cursor: pointer;
+            position: relative;
         }
+
         .button-grid button img {
             width: 100%;
             height: 100%;
         }
+
         .menu {
-            width:40px;
-            height: 200px;
+            position: absolute;
+            top: 47%;
+            left: 70px;
             display: none;
             grid-template-columns: 1fr;
             gap: 10px;
-            margin-top: 1px;
-            margin-left: 20px;
             padding: 10px;
             background-color: #f1f1f1;
             border: 1px solid #ccc;
             border-radius: 5px;
+            z-index: 1000;
         }
+
         .menu img {
-            width: 30px;
-            height: 30px;
+            width: 50px;
+            height: 50px;
             cursor: pointer;
-            border:#555 solid 1px;
-            margin-top:5px;
+            border: #555 solid 1px;
+            margin-top: 5px;
+        }
+
+        .menu.active {
+            display: grid;
         }
         .customization-area {
             position: relative;
@@ -68,9 +117,10 @@
             background-color: #e0e0e0;
             border: 2px solid #ccc;
             border-radius: 10px;
-            overflow: hidden;   
+            overflow: hidden;
         }
         .customization-area img {
+            z-index: 1;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -86,8 +136,8 @@
         }
         .rock-misc {
             z-index: 2;
-            width: 50%;
-            height: 50%;
+            width: 33%;
+            height: 33%;
         }
         .rock-eyes {
             z-index: 3;
@@ -96,56 +146,72 @@
         }
     </style>
     <script>
-        //show rock 1 menu on load
-        window.onload = function() {
-            showMenu('rockColor');
+
+        /**
+        * yeah, half of these fucking variables are redudandant but who cares
+        * i wrote them when i started this shit and low key forgot about them
+        * whatever, they're here
+        */
+        const selected = {
+            shape: 'rockShape1.png',
+            misc: 'rockMisc1.png',
+            eye: 'rockEyes1.png'
         };
-        let rockColor = null;
-        let rockShape = null;
-        let rockEyes = null;
-        let rockMisc = null;
-        let rockSize = null;
         const rockBucks = 20;
-        // show clicked menu, hide other menus
-        function showMenu(menuId) {
-            document.querySelectorAll('.menu').forEach(menu => menu.style.display = 'none');
-            document.getElementById(menuId).style.display = 'block';
-        }
-        // change rock part appearance
-        // index is number of the image clicked, rockPart is the part of the rock being changed
-        function changeAppearance(index, rockPart) {
-            console.log(`Changing appearance of ${rockPart} to index ${index}`);
-            const imgSrc = `src/${rockPart}${index}.png`;
+        const userId = 1; // TODO: replace with actual user ID
 
-            switch (rockPart) {
-                case 'rockColor':
-                    rockColor = index;
-                    break;
-                case 'rockShape':
-                    rockShape = index;
-                    break;
-                case 'rockEyes':
-                    rockEyes = index;
-                    break;
-                case 'rockMisc':
-                    rockMisc = index;
-                    break;
-                case 'rockSize':
-                    rockSize = index;
-                    break;
+        const menuParts = {
+            shapeMenu: "shape",
+            eyesMenu: "eyes",
+            miscMenu: "misc"
+        };
+        // fetch data for unlocked objects of user, and populates each menu according to category
+        // additionally displays menu 1 by default
 
+        window.onload = async function () {
+            try {
+                const response = await fetch('/items');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const itemsData = await response.json();
+
+                const allItems = itemsData;
+                console.log('Fetched items:', allItems);
+            } catch (error) {
+            console.error('Error fetching items:', error);
             }
-            
-            applyImage(imgSrc, rockPart);
+        };
+        // TODO: GET THIS SHIT TO WORK!!!!!!
+        // Want to try to get this to populate menus according to each item category on page load
+        // May have to abandon this approach but it is what it is. I still have to update HTML
+        // to support this functionality and actually test it
+        function populateMenus(items) {
+        const categories = [...new Set(items.map(item => item.category))];
 
+        for (const category of categories) {
+            menu.innerHTML = '';
+            const categoryItems = items.filter(item => item.category === category);
+            for (const item of categoryItems) {
+                const button = document.createElement('button');
+                button.classList.add('item-button');
+                const img = document.createElement('img');
+                img.src = item.image_path;
+                img.alt = item.name;
+                img.classList.add('item-image');
+                button.appendChild(img);
+                menu.appendChild(button);
+            }
         }
+        }
+
 
         // apply image to the customization area
         function applyImage(imgSrc, layer) {
             const customizationArea = document.querySelector('.customization-area');
             let imgElement = customizationArea.querySelector(`.${layer}`);
 
-            //create layer if none at first
+            //add image layer
             if (!imgElement) {
                 imgElement = document.createElement('img');
                 imgElement.classList.add(layer);
@@ -153,52 +219,178 @@
             }
 
             imgElement.src = imgSrc;
+            if (layer === 'rock-shape') {
+              selected.shape = imgSrc;
+            } else if (layer === 'rock-eyes') {
+                selected.eye = imgSrc;
+            } else if (layer === 'rock-misc') {
+                selected.misc = imgSrc;
+            }
+        }
 
+
+        /** gets name from input box and gets selected options, and creates a rock object
+        to send to backend and upload to db*/
+        function submitRock() {
+            const name = document.querySelector("input[name='name']").value;
+            if (!name || !selected.shape || !selected.eye || !selected.misc) {
+              alert("Yo, give me a name and some cool stuff dawg");
+              return;
+            }
+
+            fetch('/rock', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                name: name,
+                rockshape: selected.shape,
+                rockmisc: selected.misc,
+                rockeyes: selected.eye,
+                owner: userId
+                })
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message))
+            .catch(console.error);
+        }
+        /**
+         * displays the images menu
+         * im so fucking tired bro  jfcccccccccccccccc
+         */
+        function showMenu(menu) {
+            const menus = document.querySelectorAll('.menu');
+            menus.forEach(m => m.classList.remove('active'));
+            const selectedMenu = document.getElementById(menu);
+            if (selectedMenu) {
+                selectedMenu.classList.toggle('active');
+            }
+        }
+
+        //reset customization to default
+        function resetRock() {
+            rockShape = "/static/src/rockShape1.png";
+            rockEyes = "/static/src/rockEyes1.png";
+            rockMisc = "/static/src/rockMisc1.png";
+
+            const customizationArea = document.querySelector('.customization-area');
+            customizationArea.innerHTML = '';
+        }
+        /** gets name from input box and gets selected options, and creates a rock object
+        to send to backend and upload to db*/
+        function submitRock() {
+            const name = document.querySelector("input[name='name']").value;
+
+            if (!name || !selected.shape || !selected.eye || !selected.misc) {
+              alert("Yo, give me a name and some cool stuff dawg");
+              return;
+            }
+            fetch('/rock', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                name: name,
+                rockshape: selected.shape,
+                rockmisc: selected.misc,
+                rockeyes: selected.eye,
+                owner: userId
+              })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Failed to create rock.");
+                }
+                return res.json();
+            })
+            .then(data => {
+                alert(data.message); // Show success message
+                window.location.href = '/'; // Redirect to homepage
+            })
+            .catch(error => {
+                console.error("Error creating rock:", error);
+                alert("An error occured while creating your rock.");
+            });
+          };
+
+        function showMenu(menuId) {
+            // Hide all menus
+            const menus = document.querySelectorAll('.menu');
+            menus.forEach(menu => {
+                menu.style.display = 'none';
+            });
+
+            // Show the selected menu
+            const selectedMenu = document.getElementById(menuId);
+            if (selectedMenu) {
+                selectedMenu.style.display = 'grid'; // Use 'grid' to match your CSS
+            }
         }
     </script>
 </head>
 <body>
-    <!--navbar navbar-->
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="index.html">
-                    <img src="/src/rockpet.png" alt="Pet" style="height: 40px; display: inline-block; margin-right: 10px;">
-                    <strong>PetRock</strong>
-                </a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="#">Community</a></li>
-                <li><a href="shop.html">Store</a></li>
-                <li><a href="login.html">Login</a></li>
+    <header>
+
+        <a href="index.html" class="logo">
+
+            <img src="/static/src/rockpet.png" alt="PetRock Logo">
+            <span>PetRock</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('creation') }}">Create a Rock</a></li>
+                <li><a href="{{ url_for('shop') }}">Store</a></li>
+                <li>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('logout') }}" class="sign-in">Log out</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="sign-in">Sign In</a>
+                    {% endif %}
+                </li>
             </ul>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <div class="left-panel">
         <div class="button-grid">
-            <button onclick="showMenu('rockColor')"><img src="/src/rockColor.png" alt="Rock Color"></button>
-            <button onclick="showMenu('rockShape')"><img src="/src/rockShape.png" alt="Rock Shape"></button>
-            <button onclick="showMenu('rockEyes')"><img src="/src/rockEyes.png" alt="Rock Eyes"></button>
-            <button onclick="showMenu('rockMisc')"><img src="/src/rockMisc.png" alt="Rock Miscellaneous"></button>
-            <button onclick="showMenu('rockSize')"><img src="/src/rockSize.png" alt="Rock Size"></button>
+            <button onclick="showMenu('rockShape')"><img src="/static/src/rockShape.png" alt="Rock Shape"></button>
+            <button onclick="showMenu('rockEyes')"><img src="/static/src/rockEyes.png" alt="Rock Eyes"></button>
+            <button onclick="showMenu('rockMisc')"><img src="/static/src/rockMisc.png" alt="Rock Miscellaneous"></button>
         </div>
 
         <div id="rockShape" class="menu">
-            <img src="src/rockShape1.png" alt="Shape 1" onclick="changeAppearance(1, 'rockShape')">
-            <img src="src/rockShape2.png" alt="Shape 2" onclick="changeAppearance(2, 'rockShape')">
-            <img src="src/rockShape3.png" alt="Shape 3" onclick="changeAppearance(3, 'rockShape')">
+
+            <img src="/static/src/rockShape1.png" alt="Shape 1" onclick="applyImage('/static/src/rockShape1.png', 'rock-shape')">
+            <img src="/static/src/rockShape2.png" alt="Shape 2" onclick="applyImage('/static/src/rockShape2.png', 'rock-shape')">
+            <img src="/static/src/rockShape3.png" alt="Shape 3" onclick="applyImage('/static/src/rockShape3.png', 'rock-shape')">
+            <img src="/static/src/blackrock.png" alt="Shape 4" onclick="applyImage('/static/src/blackrock.png', 'rock-shape')">
+            <img src="/static/src/rockshape1.png" alt="Shape 5" onclick="applyImage('/static/src/rockshape1.png', 'rock-shape')">
+        </div>
+
+        <div id="rockEyes" class="menu">
+            <img src="/static/src/googlyeyes.png" alt="Eyes 1" onclick="applyImage('/static/src/googlyeyes.png', 'rock-eyes')">
+            <img src="/static/src/girlface.png" alt="Eyes 2" onclick="applyImage('/static/src/girlface.png', 'rock-eyes')">
+            <img src="/static/src/rockEyes.png" alt="Eyes 3" onclick="applyImage('/static/src/rockEyes.png', 'rock-eyes')">
+            <img src="/static/src/eyelash.png" alt="Eyes 4" onclick="applyImage('/static/src/eyelash.png', 'rock-eyes')">
+            <img src="/static/src/tiredeyes.png" alt="Eyes 5" onclick="applyImage('/static/src/tiredeyes.png', 'rock-eyes')">
         </div>
 
         <div id="rockMisc" class="menu">
-            <img src="src/rockMisc1.png" alt="Misc 1" onclick="changeAppearance(1, 'rockMisc')">
-            <img src="src/rockMisc2.png" alt="Misc 2" onclick="changeAppearance(2, 'rockMisc')">
+            <img src="/static/src/rockMisc1.png" alt="Misc 1" onclick="applyImage('/static/src/rockMisc1.png', 'rock-misc')">
+            <img src="/static/src/crown.png" alt="Misc 2" onclick="applyImage('/static/src/crown.png', 'rock-misc')">
+            <img src="/static/src/piratehat.png" alt="Misc 3" onclick="applyImage('/static/src/piratehat.png', 'rock-misc')">
+            <img src="/static/src/wizardhat.png" alt="Misc 4" onclick="applyImage('/static/src/wizardhat.png', 'rock-misc')">
+
         </div>
     </div>
 
     <div style="display: flex; align-items: center; margin-top: 20px; padding-left: 20px;">
-        <img src="src/rockbux.png" alt="rockBux" style="width: 80px; height: 80px; margin-right: 10px;"> <!-- Replace with the actual path to your image -->
+
+        <img src="/static/src/rockBux.png" alt="rockBux" style="width: 80px; height: 80px; margin-right: 10px;"> <!-- Replace with the actual path to your image -->
+
         <p style="font-size: 5.0rem; margin: 0;">20</p>
     </div>
 
@@ -208,12 +400,13 @@
     </div>
 
     <div>
-        <form action="creation.html" method="post" style="text-align: center; margin-top: 20px;">
+        <form onsubmit="submitRock(); return false;" style="text-align: center; margin-top: 20px;">
             <input type="text" name="name" placeholder="Enter your pet's name" required style="width: 300px; padding: 10px; font-size: 1.2rem; border-radius: 5px; border: 1px solid #ccc;">
             <div class="customization-area"></div>
             <br>
-            <button type="submit" class="btn btn-primary" style="font-size: 1.2rem;">Create Pet</button>
-            <button type="button" class="btn btn-secondary" style="font-size: 1.2rem; margin-left: 10px;">Restart</button>
+            <button type="submit" class="btn btn-primary" style="font-size: 1.2rem;" onclick="submitRock()">Create Pet</button>
+
+            <button type="button" class="btn btn-secondary" style="font-size: 1.2rem; margin-left: 10px;" onclick ="resetRock()">Restart</button>
         </form>
     </div>
 </body>

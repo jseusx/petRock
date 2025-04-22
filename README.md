@@ -1,4 +1,9 @@
 # petRock
+## Contributors:
+### Brady Bromaghim : bromaghimb21@students.ecu.edu
+### Joshua Dixon : dixonjo22@students.ecu.edu
+### Jesus Jimenez-Sanchez : jimenezsanchezj18@students.ecu.edu
+### Jeremiah Teele : teelej18@students.ecu.edu
 ## How To setup Docker For Development
 Download Docker Desktop use plan free or paid if you wanna spend $$$<br>
 
